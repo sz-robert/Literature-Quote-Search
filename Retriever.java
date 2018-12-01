@@ -3,6 +3,8 @@ import java.util.Arrays;
 import org.bson.Document;
 import org.json.simple.JSONObject;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -10,29 +12,36 @@ import com.mongodb.client.MongoDatabase;
 public class Retriever {
 	public Retriever () {}
 	
-	private MongoClient serverConnection = new MongoClient("localhost", 27017);
-	private MongoDatabase db = serverConnection.getDatabase("library");
+	private String password; 
+	private ServerAddress get_to_em; 
+	private MongoCredential credential;
+	private MongoClient mongoClient;
+	private MongoDatabase db;
 	
-	private MongoCollection<Document> wordsCollection = db.getCollection("wordsM2");
-	private MongoCollection<Document> booksCollection = db.getCollection("booksM2");
+	private MongoCollection<Document> wordsCollection;
+	private MongoCollection<Document> booksCollection;
 	
 	ArrayList<String> results = new ArrayList<>();
 	
-	public ArrayList<String> findSearchTerms(String searchTerms, String logicalOperator, String notTerms, String author) {
-		System.out.println(logicalOperator);
-		findQuotes(searchTerms, logicalOperator, notTerms, author);
+	public ArrayList<String> findSearchTerms(String searchTerms, String logicalOperator, String excludedTerms, String titleConstraint, String authorConstraint, boolean isLocal) {
+		if(isLocal) {
+			createLocalDBConnection();
+		} 
+		else {
+			createRemoteDBConnection();
+		}
+		findQuotes(searchTerms, logicalOperator, excludedTerms, authorConstraint, titleConstraint);
 		return results;
 	}
 	
-	public ArrayList<String> findQuotes(String searchTerms, String logicalOperator, String notTerms, String author) {
+	public ArrayList<String> findQuotes(String searchTerms, String logicalOperator, String excludedTerms, String authorConstraint, String titleConstraint) {
 		ArrayList<WordResult> wordsList = new ArrayList<>();
 		String searchTermsList[] = searchTerms.split(" ");
 		if(!searchTerms.isEmpty()) {
 			if (logicalOperator.equals("AND")) {
-					results.add("Logical Operator AND chosen.");
-							wordsList = findWords(searchTermsList[0], 10, 0, author);
+							wordsList = findWords(searchTermsList[0], 10, 0, authorConstraint, titleConstraint);
 							//limit is 10000
-							findSentences(wordsList, results, logicalOperator, searchTerms, 10000, 0, notTerms);
+							findSentences(wordsList, results, logicalOperator, searchTerms, 10000, 0, excludedTerms);
 			} else 
 			if (logicalOperator.equals("OR")) {
 					results.add("Logical Operator OR chosen.");
@@ -43,8 +52,8 @@ public class Retriever {
 					ArrayList<WordResult> wordsListInterlaced = new ArrayList<>();
 					while (maxResults > 0) {
 						for (String word : searchTermsList) {
-							ArrayList<WordResult> wordResult = findWords(word, limit, skip, author);
-							for (WordResult wr : wordResult) {
+							ArrayList<WordResult> remoteWordResult = findWords(word, limit, skip, authorConstraint, titleConstraint);
+							for (WordResult wr : remoteWordResult) {
 								wordsListInterlaced.add(wr);
 							}
 						}
@@ -56,9 +65,9 @@ public class Retriever {
 					for(WordResult wr : wordsListInterlaced)  {
 						System.out.println(wr.getBookId() + "<--- bookid");
 					}
-					findSentences(wordsListInterlaced, results, logicalOperator, searchTerms, 10000, 0, notTerms);
+					findSentences(wordsListInterlaced, results, logicalOperator, searchTerms, 10000, 0, excludedTerms);
 			} else {
-					results.add("Logical Operator must be AND or OR.");
+					results.add("Logical Operator must be AND/OR.");
 			}
 		}
 		else {
@@ -67,16 +76,15 @@ public class Retriever {
 		return results;
 	}
 	
-	private ArrayList<WordResult> findWords(String word, int limit, int skip, String author) {
-		System.out.println(author + "<---author");
+	private ArrayList<WordResult> findWords(String word, int limit, int skip, String authorConstraint, String titleConstraint) {
 		ArrayList<WordResult> wordsList = new ArrayList<>();
         Document projectWordFields = new Document("_id", 0);
         projectWordFields.put("bookId", 1);
         projectWordFields.put("totalOccurrences", 1);
         projectWordFields.put("locations", 1);
         //AggregateIterable<Document> aggregateWords = wordsCollection.aggregate(
-        AggregateIterable<Document> aggregateWords;
-        if (author.isEmpty()) {
+        AggregateIterable<Document> aggregateWords = null;
+        if (authorConstraint.isEmpty() && titleConstraint.isEmpty()) {
     		aggregateWords = wordsCollection.aggregate(
     	            Arrays.asList(
     	                    new Document("$match", new Document("word", word)),
@@ -86,11 +94,34 @@ public class Retriever {
     	                    new Document("$project", new Document(projectWordFields)
     	                    )));
         }
-        else {
+        else if (!authorConstraint.isEmpty() && titleConstraint.isEmpty()) {
     		aggregateWords = wordsCollection.aggregate(
     	            Arrays.asList(
     	                    new Document("$match", new Document("word", word)),
-    	                    new Document("$match", new Document("author", author)),
+    	                    new Document("$match", new Document("author", authorConstraint)),
+    	                    new Document ("$sort", new Document("totalOccurrences", -1)),
+    	                    new Document("$limit", limit),
+    	                    new Document("$skip", skip),
+    	                    new Document("$project", new Document(projectWordFields)
+    	                    )));
+        }
+        else if (authorConstraint.isEmpty() && !titleConstraint.isEmpty()) {
+    		aggregateWords = wordsCollection.aggregate(
+    	            Arrays.asList(
+    	                    new Document("$match", new Document("word", word)),
+    	                    new Document("$match", new Document("title", titleConstraint)),
+    	                    new Document ("$sort", new Document("totalOccurrences", -1)),
+    	                    new Document("$limit", limit),
+    	                    new Document("$skip", skip),
+    	                    new Document("$project", new Document(projectWordFields)
+    	                    )));
+        }
+        else if (!authorConstraint.isEmpty() && !titleConstraint.isEmpty()) {
+    		aggregateWords = wordsCollection.aggregate(
+    	            Arrays.asList(
+    	                    new Document("$match", new Document("word", word)),
+    	                    new Document("$match", new Document("author", authorConstraint)),
+    	                    new Document("$match", new Document("title", titleConstraint)),
     	                    new Document ("$sort", new Document("totalOccurrences", -1)),
     	                    new Document("$limit", limit),
     	                    new Document("$skip", skip),
@@ -209,6 +240,23 @@ public class Retriever {
 		}
 		return containsNOtTerms;
 		
+	}
+	private void createLocalDBConnection() {
+		mongoClient = new MongoClient("localhost", 27017);
+		db = mongoClient.getDatabase("library");
+		wordsCollection = db.getCollection("wordsM2");
+		booksCollection = db.getCollection("booksM2");
+		
+	}
+	private void createRemoteDBConnection() {
+		password = "password123"; 
+		get_to_em = new ServerAddress("ec2-34-210-26-240.us-west-2.compute.amazonaws.com" , 9999); 
+		credential = MongoCredential.createCredential("terminator", "t1000", password.toCharArray());
+		mongoClient = new MongoClient(get_to_em, Arrays.asList(credential));
+		db = mongoClient.getDatabase("t1000");
+		
+		wordsCollection = db.getCollection("wordsM2");
+		booksCollection = db.getCollection("booksM2");
 	}
 }
 

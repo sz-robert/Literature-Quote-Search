@@ -49,7 +49,7 @@ public class GUI extends JFrame
 	JTextField selectField = new JTextField (20);
 	JTextField authorField = new JTextField (20);
 	JTextField searchField = new JTextField (20);
-	JTextField searchField2 = new JTextField (20);
+	JTextField excludeField = new JTextField (20);
 	JTextField browseBooksField = new JTextField (20);
 	JTextField browseStorageField = new JTextField (20);
 	JTextField browseHashField = new JTextField (20);
@@ -76,6 +76,13 @@ public class GUI extends JFrame
 	JTable table;
 	
 	JComboBox <String> searchOptions = new JComboBox <String> ();
+	
+	JMenuBar menuBar;
+	JMenu menu, submenu;
+	JMenuItem bookListMenuItem;
+	JRadioButtonMenuItem localMenuItem;
+	JRadioButtonMenuItem remoteMenuItem;
+	JCheckBoxMenuItem cbMenuItem;
 
 	//creating an instance object to initialize the table
 	private Object[][] searchResultTable = new Object[50][1];
@@ -86,7 +93,7 @@ public class GUI extends JFrame
 	
 	//constructor to build the main GUI 
 	public GUI () 
-	{
+	{	
 		setTitle ("Search Engine");
 		setSize(800, 370);
 		setLocation( // Center window on screen.
@@ -132,7 +139,7 @@ public class GUI extends JFrame
 		
 		
 		searchPanel2.add(searchLabel2);
-		searchPanel2.add (searchField2);
+		searchPanel2.add (excludeField);
 		searchButtonPanel.add (searchButton);
 		
 		searchPanel.add(searchPanel1, BorderLayout.CENTER);
@@ -143,17 +150,10 @@ public class GUI extends JFrame
 		searchPanel.add(searchButtonPanel);
 		searchPanel.add(new JLabel("   "));
 		
-
-		
 		add (browsePanel, BorderLayout.PAGE_START);
 		add (searchPanel, BorderLayout.CENTER);
 		
 		//Where the GUI is created:
-		JMenuBar menuBar;
-		JMenu menu, submenu;
-		JMenuItem bookListMenuItem;
-		JRadioButtonMenuItem rbMenuItem;
-		JCheckBoxMenuItem cbMenuItem;
 
 		//Create the menu bar.
 		menuBar = new JMenuBar();
@@ -161,28 +161,24 @@ public class GUI extends JFrame
 		//Build the first menu.
 		menu = new JMenu("Server");
 		menu.setMnemonic(KeyEvent.VK_A);
-		menu.getAccessibleContext().setAccessibleDescription(
-		        "The only menu in this program that has menu items");
 		menuBar.add(menu);
 
 		//a group of radio button menu items
 		menu.addSeparator();
 		ButtonGroup group = new ButtonGroup();
-		rbMenuItem = new JRadioButtonMenuItem("Use Local");
-		rbMenuItem.setSelected(true);
-		rbMenuItem.setMnemonic(KeyEvent.VK_R);
-		group.add(rbMenuItem);
-		menu.add(rbMenuItem);
-
-		rbMenuItem = new JRadioButtonMenuItem("Use Remote");
-		rbMenuItem.setMnemonic(KeyEvent.VK_O);
-		group.add(rbMenuItem);
-		menu.add(rbMenuItem);
+		localMenuItem = new JRadioButtonMenuItem("Use Local Database");
+		localMenuItem.setSelected(true);
+		localMenuItem.setMnemonic(KeyEvent.VK_R);
+		group.add(localMenuItem);
+		menu.add(localMenuItem);
+		remoteMenuItem = new JRadioButtonMenuItem("Use Remote Database");
+		remoteMenuItem.setMnemonic(KeyEvent.VK_O);
+		group.add(remoteMenuItem);
+		menu.add(remoteMenuItem);
 
 		//a group of JMenuItems
 		bookListMenuItem = new JMenuItem("Get Remote Booklist", KeyEvent.VK_T);
 		bookListMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));
-		bookListMenuItem.getAccessibleContext().setAccessibleDescription("This doesn't really do anything");
 		bookListMenuItem.addActionListener( new ActionListener () 
 		{
 			public void actionPerformed (ActionEvent e) 
@@ -230,6 +226,7 @@ public class GUI extends JFrame
 			} // end method
 		} );// end inner class
 		
+		/*
 		selectButton.addActionListener ( new ActionListener () 
 		{
 			public void actionPerformed (ActionEvent e) 
@@ -237,13 +234,11 @@ public class GUI extends JFrame
 				selectBooks (selectField);
 			} // end method
 		} );// end inner class
-		
+		*/
 		searchButton.addActionListener ( new ActionListener () 
 		{
 			public void actionPerformed (ActionEvent e) {
-				
-				search ((String) searchField.getText(), (String) searchOptions.getSelectedItem(), (String) searchField2.getText());
-					
+				search ();
 			} // end method
 		} );// end inner class
 	
@@ -424,8 +419,8 @@ public class GUI extends JFrame
 	    }
 	    
 	    //submit button
-	    JButton submitButton = new JButton("Submit");
-	    submitButton.addActionListener(new ActionListener() {
+	    JButton submitRemoteListButton = new JButton("Submit");
+	    submitRemoteListButton.addActionListener(new ActionListener() {
 
 	      @Override
 	      public void actionPerformed(ActionEvent arg0) {
@@ -445,8 +440,8 @@ public class GUI extends JFrame
 	        }
 	        for (String title : checkedBooks) {
 	        	specialized_ops so = new specialized_ops();
-	        	RemoteIndexer ri = new RemoteIndexer();
-	        	ri.insert(title, "icelandic author", "unzipped", so.mongo_retrieve_sentences(title));
+	        	Indexer ri = new Indexer();
+	        	ri.insert(title, "icelandic author", "unzipped", so.mongo_retrieve_sentences(title), localMenuItem.isSelected() );
 	        }
 
 	      }
@@ -488,9 +483,9 @@ public class GUI extends JFrame
 	
 	
 	//search method 
-	public void search (String searchWord1, String logicalOperator, String searchWord2) 
+	public void search () 
 	{
-		RemoteRetriever retriever = new RemoteRetriever();
+		Retriever retriever = new Retriever();
 		//Retriever retriever = new Retriever();
 		/*
 		//message dialog
@@ -500,7 +495,7 @@ public class GUI extends JFrame
 		    "Message",
 		    JOptionPane.PLAIN_MESSAGE);
 		*/
-		ArrayList<String> resultsList = retriever.findSearchTerms(searchField.getText(), logicalOperator, searchField2.getText(), searchWord2);
+		ArrayList<String> resultsList = retriever.findSearchTerms(searchField.getText(), (String) searchOptions.getSelectedItem(), excludeField.getText(), selectField.getText(), authorField.getText(),  localMenuItem.isSelected());
 		
 		//table variables
 		frame = new JFrame("");

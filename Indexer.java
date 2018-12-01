@@ -1,24 +1,42 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.UUID;
+
 import org.bson.Document;
+
+import com.mongodb.BulkWriteException;
+import com.mongodb.BulkWriteOperation;
+import com.mongodb.DB;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.BulkWriteOptions;
 import com.mongodb.client.model.Indexes;
+import com.mongodb.client.model.InsertOneModel;
+import com.mongodb.client.model.UpdateOneModel;
+import com.mongodb.client.model.WriteModel;
 
 public class Indexer {
 	
-	private MongoClient serverConnection = new MongoClient("localhost", 27017);
-	private MongoDatabase db = serverConnection.getDatabase("library");
+	private String password; 
+	private ServerAddress get_to_em; 
+	private MongoCredential credential;
+	private MongoClient mongoClient;
+	private MongoDatabase db;
 	
-	private MongoCollection<Document> wordsCollection = db.getCollection("wordsM2");
-	private MongoCollection<Document> booksCollection = db.getCollection("booksM2");
-	
+	private MongoCollection<Document> wordsCollection;
+	private MongoCollection<Document> booksCollection;
 
 	private Hashtable<String, Word> wordStatistics = new Hashtable<>();
+	private List<WriteModel<Document>> wordDocuments = new ArrayList<>();
 	
 	public Indexer () {
+		/*
 		wordsCollection.createIndex(Indexes.compoundIndex(Indexes.ascending("word"), 
 				Indexes.ascending("bookId"),
 				Indexes.ascending("author"),
@@ -27,35 +45,39 @@ public class Indexer {
 		booksCollection.createIndex(Indexes.compoundIndex(Indexes.ascending("bookId"), 
 				Indexes.ascending("title"),
 				Indexes.ascending("author")));
-	}
-
-	public void insertRemote(String book_title, String book_author, String[] book_senteces2) {
-		insert(book_title, book_author, "unzipped", book_senteces2);
+		*/
 	}
 	
-	public void insert(String book_title, String book_author, String unzipped, String[] book_sentences) {
+	public void insert(String book_title, String book_author, String unzipped, String[] book_sentences, boolean isLocal) {
+		if(isLocal) {
+			createLocalDBConnection();
+		} 
+		else {
+			createRemoteDBConnection();
+		}
 		String uniqueId = UUID.randomUUID().toString();
 		int sentencePosition = 1;
 		Document bookDocument = new Document("bookId", uniqueId)
 				.append("title", book_title)
                 .append("author", book_author);
                 //.append("date", book_year)
-		        for(String sentence : book_sentences) {
-		        	if(sentence != null) {
-		            	System.out.println("Inserting" + sentence);
-		            	bookDocument.append("sentence-" + String.valueOf(sentencePosition), sentence);
-		            	System.out.println("Inserted: " + sentencePosition + " sentence for: " + book_title );
-		            	String[] words = sentence.split(" "); 
-		            	for(String word : words) {
-		            		if(!(word.length() < 1) && (word != "") && (!word.isEmpty()) && (word != null) && (word.charAt(0) != '$')) {
-		            			updateWordStatistics(word, sentencePosition);
-		            		}
-		            	}
-		        	}
-		        	sentencePosition++;
-		        }
+                for(String sentence : book_sentences) {
+                	if(sentence != null) {
+                    	System.out.println("Inserting" + sentence);
+                    	bookDocument.append("sentence-" + String.valueOf(sentencePosition), sentence);
+                    	System.out.println("Inserted: " + sentencePosition + " sentence for: " + book_title );
+                    	String[] words = sentence.split(" "); 
+                    	for(String word : words) {
+                    		if(!(word.length() < 1) && (word != "") && (!word.isEmpty()) && (word != null) && (word.charAt(0) != '$')) {
+                    			updateWordStatistics(word, sentencePosition);
+                    		}
+                    	}
+                	}
+                	sentencePosition++;
+                }
         booksCollection.insertOne(bookDocument);
         System.out.println("Inserted: "+ book_title );
+        
         for(String key : wordStatistics.keySet()) {
     		Word currentWord = wordStatistics.get(key);
     		System.out.println("Inserting: " );
@@ -65,10 +87,18 @@ public class Indexer {
             .append("author", book_author)
             .append("totalOccurrences", currentWord.getTotal())
             .append("locations", currentWord.getLocations());
-            wordsCollection.insertOne(wordDocument);
-            System.out.println("Inserted: "+ currentWord.getName() + " for " +  book_title);
+    //wordsCollection.insertOne(wordDocument);
+            //uncomment for bulk insert
+            wordDocuments.add(new InsertOneModel<>(wordDocument));
+    //System.out.println("Inserted: "+ currentWord.getName() + " for " +  book_title);
     	}
-                //.append("versions", Arrays.asList("v3.2", "v3.0", "v2.6")) // might use for locations later
+        	//bulk write options
+	    	BulkWriteOptions bulkWriteOptions = new BulkWriteOptions();
+	    	bulkWriteOptions.ordered(false);
+	    	bulkWriteOptions.bypassDocumentValidation(true);
+	    	//bulk write
+        	wordsCollection.bulkWrite(wordDocuments, bulkWriteOptions);
+        	System.out.println("Bulk Inserted:words for " +  book_title);
 	}
 	
 	private void updateWordStatistics(String word, int sentencePosition) {
@@ -86,6 +116,45 @@ public class Indexer {
 			newWord.appendLocations(String.valueOf(sentencePosition));
 			wordStatistics.put(word, newWord);
 		}
+	}
+	
+	private void bulkInsert(List<WriteModel<Document>> docs, MongoCollection<Document> collection) {
+
+	    BulkWriteOptions bulkWriteOptions = new BulkWriteOptions();
+	    bulkWriteOptions.ordered(false);
+	    bulkWriteOptions.bypassDocumentValidation(true);
+	    
+	    com.mongodb.bulk.BulkWriteResult bulkWriteResult = null;
+	    try {
+	        bulkWriteResult = collection.bulkWrite(docs, bulkWriteOptions);
+	    } catch (BulkWriteException e) {
+	        List<com.mongodb.BulkWriteError> bulkWriteErrors = e.getWriteErrors();
+	        for (com.mongodb.BulkWriteError bulkWriteError : bulkWriteErrors) {
+	            int failedIndex = bulkWriteError.getIndex();
+	            System.out.println("Failed record: " + failedIndex);
+	        }
+	    }
+	
+	}
+	
+	private void createLocalDBConnection() {
+		System.out.println("creating local connection");
+		mongoClient = new MongoClient("localhost", 27017);
+		db = mongoClient.getDatabase("library");
+		wordsCollection = db.getCollection("wordsM2");
+		booksCollection = db.getCollection("booksM2");
+		System.out.println("finished creating local connection");
+		
+	}
+	private void createRemoteDBConnection() {
+		password = "password123"; 
+		get_to_em = new ServerAddress("ec2-34-210-26-240.us-west-2.compute.amazonaws.com" , 9999); 
+		credential = MongoCredential.createCredential("terminator", "t1000", password.toCharArray());
+		mongoClient = new MongoClient(get_to_em, Arrays.asList(credential));
+		db = mongoClient.getDatabase("t1000");
+		
+		wordsCollection = db.getCollection("wordsM2");
+		booksCollection = db.getCollection("booksM2");
 	}
 }
 
@@ -118,4 +187,3 @@ class Result {
 	String titleAuthor = "";
 	ArrayList<String> quotes = new ArrayList<>();
 }
-
