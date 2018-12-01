@@ -286,10 +286,8 @@ public class parser_class {
 						
 						append_log("BOOK_TITLE: " + book_title); 
 						
-Indexer indexer = new Indexer();
-System.out.println("Attempting to insert: " + book_title);
-indexer.insert(book_title, book_author, unzipped, book_senteces2);
-//ml.insertNewDocument(book_title, book_author, unzipped, book_senteces2);
+						Indexer indexer = new Indexer();
+						indexer.insert(book_title, book_author, unzipped, book_senteces2);
 						}							//so the caller can get it	
 					}
 				}

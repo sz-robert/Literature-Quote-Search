@@ -3,15 +3,24 @@ import java.util.Arrays;
 import org.bson.Document;
 import org.json.simple.JSONObject;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-public class Retriever {
-	public Retriever () {}
+public class RemoteRetriever {
+	public RemoteRetriever () {}
 	
+	/*
 	private MongoClient serverConnection = new MongoClient("localhost", 27017);
 	private MongoDatabase db = serverConnection.getDatabase("library");
+	*/
+	String password = "password123"; 
+	ServerAddress get_to_em = new ServerAddress("ec2-34-210-26-240.us-west-2.compute.amazonaws.com" , 9999); 
+	MongoCredential credential = MongoCredential.createCredential("terminator", "t1000", password.toCharArray());
+	MongoClient mongoClient = new MongoClient(get_to_em, Arrays.asList(credential));
+	MongoDatabase db = mongoClient.getDatabase("t1000");
 	
 	private MongoCollection<Document> wordsCollection = db.getCollection("wordsM2");
 	private MongoCollection<Document> booksCollection = db.getCollection("booksM2");
@@ -25,7 +34,7 @@ public class Retriever {
 	}
 	
 	public ArrayList<String> findQuotes(String searchTerms, String logicalOperator, String notTerms, String author) {
-		ArrayList<WordResult> wordsList = new ArrayList<>();
+		ArrayList<RemoteWordResult> wordsList = new ArrayList<>();
 		String searchTermsList[] = searchTerms.split(" ");
 		if(!searchTerms.isEmpty()) {
 			if (logicalOperator.equals("AND")) {
@@ -40,11 +49,11 @@ public class Retriever {
 					int maxResults = 10000;
 					int skip = 0;
 					int limit = 1;
-					ArrayList<WordResult> wordsListInterlaced = new ArrayList<>();
+					ArrayList<RemoteWordResult> wordsListInterlaced = new ArrayList<>();
 					while (maxResults > 0) {
 						for (String word : searchTermsList) {
-							ArrayList<WordResult> wordResult = findWords(word, limit, skip, author);
-							for (WordResult wr : wordResult) {
+							ArrayList<RemoteWordResult> remoteWordResult = findWords(word, limit, skip, author);
+							for (RemoteWordResult wr : remoteWordResult) {
 								wordsListInterlaced.add(wr);
 							}
 						}
@@ -53,12 +62,12 @@ public class Retriever {
 						maxResults--;
 					}
 					//limit is 1000
-					for(WordResult wr : wordsListInterlaced)  {
+					for(RemoteWordResult wr : wordsListInterlaced)  {
 						System.out.println(wr.getBookId() + "<--- bookid");
 					}
 					findSentences(wordsListInterlaced, results, logicalOperator, searchTerms, 10000, 0, notTerms);
 			} else {
-					results.add("Logical Operator must be AND or OR.");
+					results.add("Logical Operator must be AND/OR.");
 			}
 		}
 		else {
@@ -67,9 +76,8 @@ public class Retriever {
 		return results;
 	}
 	
-	private ArrayList<WordResult> findWords(String word, int limit, int skip, String author) {
-		System.out.println(author + "<---author");
-		ArrayList<WordResult> wordsList = new ArrayList<>();
+	private ArrayList<RemoteWordResult> findWords(String word, int limit, int skip, String author) {
+		ArrayList<RemoteWordResult> wordsList = new ArrayList<>();
         Document projectWordFields = new Document("_id", 0);
         projectWordFields.put("bookId", 1);
         projectWordFields.put("totalOccurrences", 1);
@@ -99,7 +107,7 @@ public class Retriever {
         }
 
 		for (Document doc : aggregateWords) {
-			WordResult retreivedWord = new WordResult();
+			RemoteWordResult retreivedWord = new RemoteWordResult();
 			String[] jsonSplit = doc.toJson().split("[\\s,;\"]+");
 			retreivedWord.setBookId(jsonSplit[3]);
 			retreivedWord.setTotalOccurrences(jsonSplit[6]);
@@ -109,14 +117,14 @@ public class Retriever {
 		}
 		return wordsList;
 	}
-	private void findSentences(ArrayList<WordResult> wordsList,
+	private void findSentences(ArrayList<RemoteWordResult> wordsList,
 									 ArrayList<String> results, 
 									 String logicalOperator, 
 									 String searchTerms, 
 									 int limit, 
 									 int skip,
 									 String notTerms) {
-		for(WordResult wordResult : wordsList) {
+		for(RemoteWordResult wordResult : wordsList) {
 			 Document projectBookFields = new Document("_id", 0);
 		        projectBookFields.put("title", 1);
 		        projectBookFields.put("author", 1);
@@ -212,7 +220,7 @@ public class Retriever {
 	}
 }
 
-class WordResult {
+class RemoteWordResult {
 	String bookId;
 	String totalOccurrences;
 	String[] locations;

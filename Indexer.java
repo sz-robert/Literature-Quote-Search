@@ -12,17 +12,6 @@ public class Indexer {
 	private MongoClient serverConnection = new MongoClient("localhost", 27017);
 	private MongoDatabase db = serverConnection.getDatabase("library");
 	
-/*
-	MongoClient mongo = new MongoClient( "ec2-34-222-109-70.us-west-2.compute.amazonaws.com" , 9999 );
-	MongoClientOptions.Builder optionsBuilder = MongoClientOptions.builder()
-	.connectTimeout(3000)
-	.socketTimeout(3000);
-	String password = "password123";  
-	ServerAddress get_to_em = new ServerAddress("ec2-54-185-61-81.us-west-2.compute.amazonaws.com" , 9999);
-	MongoCredential credential = MongoCredential.createCredential("terminator", "t1000", password.toCharArray());
-	MongoDatabase db = mongo.getDatabase("library");
-	*/
-	
 	private MongoCollection<Document> wordsCollection = db.getCollection("wordsM2");
 	private MongoCollection<Document> booksCollection = db.getCollection("booksM2");
 	
@@ -51,17 +40,20 @@ public class Indexer {
 				.append("title", book_title)
                 .append("author", book_author);
                 //.append("date", book_year)
-                for(String sentence : book_sentences) {
-                	bookDocument.append("sentence-" + String.valueOf(sentencePosition), sentence);
-                	System.out.println("Inserted: " + sentencePosition + " sentence for: " + book_title );
-                	String[] words = sentence.split(" "); 
-                	for(String word : words) {
-                		if(!(word.length() < 1) && (word != "") && (!word.isEmpty()) && (word != null) && (word.charAt(0) != '$')) {
-                			updateWordStatistics(word, sentencePosition);
-                		}
-                	}
-                	sentencePosition++;
-                }
+		        for(String sentence : book_sentences) {
+		        	if(sentence != null) {
+		            	System.out.println("Inserting" + sentence);
+		            	bookDocument.append("sentence-" + String.valueOf(sentencePosition), sentence);
+		            	System.out.println("Inserted: " + sentencePosition + " sentence for: " + book_title );
+		            	String[] words = sentence.split(" "); 
+		            	for(String word : words) {
+		            		if(!(word.length() < 1) && (word != "") && (!word.isEmpty()) && (word != null) && (word.charAt(0) != '$')) {
+		            			updateWordStatistics(word, sentencePosition);
+		            		}
+		            	}
+		        	}
+		        	sentencePosition++;
+		        }
         booksCollection.insertOne(bookDocument);
         System.out.println("Inserted: "+ book_title );
         for(String key : wordStatistics.keySet()) {
@@ -126,3 +118,4 @@ class Result {
 	String titleAuthor = "";
 	ArrayList<String> quotes = new ArrayList<>();
 }
+

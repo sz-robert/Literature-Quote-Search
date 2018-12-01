@@ -1,22 +1,31 @@
-//package searchEngineProject;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import javax.swing.JFrame;
 //import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JFileChooser;
 
@@ -31,9 +40,14 @@ public class GUI extends JFrame
 	JPanel browseStoragePanel = new JPanel ();
 	JPanel browseHashPanel = new JPanel ();
 	JPanel directorySubmitPanel = new JPanel ();
+	JPanel selectPanel = new JPanel ();
+	JPanel authorPanel = new JPanel ();
 	JPanel searchPanel = new JPanel ();
 	JPanel searchPanel1 = new JPanel ();
 	JPanel searchPanel2 = new JPanel ();
+	JPanel searchButtonPanel = new JPanel ();
+	JTextField selectField = new JTextField (20);
+	JTextField authorField = new JTextField (20);
 	JTextField searchField = new JTextField (20);
 	JTextField searchField2 = new JTextField (20);
 	JTextField browseBooksField = new JTextField (20);
@@ -42,39 +56,45 @@ public class GUI extends JFrame
 	JButton browseBooksButton = new JButton ("Browse");
 	JButton browseStorageButton = new JButton ("Browse");
 	JButton browseHashButton = new JButton ("Browse");
+	JButton selectButton = new JButton ("Select");
 	JButton searchButton = new JButton ("Search");
 	JButton submitButton = new JButton ("Process Books");
 	JLabel browseLabel = new JLabel ("Zipped books: ");
 	JLabel browseStorageLabel = new JLabel ("Unzip Books To: ");
 	JLabel browseHashLabel = new JLabel ("Parsed Books Log: ");
 	JLabel searchLabel = new JLabel ("Search Terms: ");
-	JLabel searchLabel2 = new JLabel ("Exclude: ");
+	JLabel searchLabel2 = new JLabel ("Exclude Words: ");
+	JLabel selectLabel = new JLabel ("Search Title: ");
+	JLabel authorLabel = new JLabel ("Search Author: ");
 	//JLabel blankLabel = new JLabel ("                    ");//blank label to create gap 
 	JScrollPane scrollPane;
 	
 	JFrame frame;
 	JPanel panel;
+	JPanel panel1;
+	JPanel panel2;
 	JTable table;
 	
 	JComboBox <String> searchOptions = new JComboBox <String> ();
 
 	//creating an instance object to initialize the table
-//	private Object[][] searchResultTable = new Object[50][1];
+	private Object[][] searchResultTable = new Object[50][1];
 	String column[] = {"Results"};
 	DefaultTableModel defaultTableModel = new DefaultTableModel(column, 0);
 	Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+	static String[] titlesAvailable;
 	
 	//constructor to build the main GUI 
 	public GUI () 
 	{
 		setTitle ("Search Engine");
-		setSize(500, 290);
+		setSize(800, 370);
 		setLocation( // Center window on screen.
-				(screen.width - 500)/2, 
-				(screen.height - 500)/2 );
+				(screen.width - 600)/2, 
+				(screen.height - 600)/2 );
 		setLayout(new BorderLayout());
 		browsePanel.setLayout(new GridLayout(4,1));
-		searchPanel.setLayout(new GridLayout(3,1));
+		searchPanel.setLayout(new GridLayout(4,1));
 		setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
 	
 		browseBooksPanel.add (browseLabel);
@@ -96,7 +116,12 @@ public class GUI extends JFrame
 		//browsePanel.add(searchPanel1, BorderLayout.SOUTH);
 		//browsePanel.add(searchPanel2);
 		
+		selectPanel.add(selectLabel);
+		selectPanel.add (selectField);
+		//selectPanel.add (selectButton);
 		
+		authorPanel.add(authorLabel);
+		authorPanel.add(authorField);
 		
 		searchPanel1.add(searchLabel);
 		searchPanel1.add (searchField);
@@ -108,14 +133,66 @@ public class GUI extends JFrame
 		
 		searchPanel2.add(searchLabel2);
 		searchPanel2.add (searchField2);
-		searchPanel2.add (searchButton);
+		searchButtonPanel.add (searchButton);
 		
+		searchPanel.add(searchPanel1, BorderLayout.CENTER);
+		searchPanel.add(searchPanel2, BorderLayout.SOUTH);
+		searchPanel.add(selectPanel);
+		searchPanel.add(authorPanel);
+		searchPanel.add(new JLabel("   "));
+		searchPanel.add(searchButtonPanel);
+		searchPanel.add(new JLabel("   "));
 		
-		searchPanel.add(searchPanel1);
-		searchPanel.add(searchPanel2, BorderLayout.CENTER);
+
 		
 		add (browsePanel, BorderLayout.PAGE_START);
 		add (searchPanel, BorderLayout.CENTER);
+		
+		//Where the GUI is created:
+		JMenuBar menuBar;
+		JMenu menu, submenu;
+		JMenuItem bookListMenuItem;
+		JRadioButtonMenuItem rbMenuItem;
+		JCheckBoxMenuItem cbMenuItem;
+
+		//Create the menu bar.
+		menuBar = new JMenuBar();
+
+		//Build the first menu.
+		menu = new JMenu("Server");
+		menu.setMnemonic(KeyEvent.VK_A);
+		menu.getAccessibleContext().setAccessibleDescription(
+		        "The only menu in this program that has menu items");
+		menuBar.add(menu);
+
+		//a group of radio button menu items
+		menu.addSeparator();
+		ButtonGroup group = new ButtonGroup();
+		rbMenuItem = new JRadioButtonMenuItem("Use Local");
+		rbMenuItem.setSelected(true);
+		rbMenuItem.setMnemonic(KeyEvent.VK_R);
+		group.add(rbMenuItem);
+		menu.add(rbMenuItem);
+
+		rbMenuItem = new JRadioButtonMenuItem("Use Remote");
+		rbMenuItem.setMnemonic(KeyEvent.VK_O);
+		group.add(rbMenuItem);
+		menu.add(rbMenuItem);
+
+		//a group of JMenuItems
+		bookListMenuItem = new JMenuItem("Get Remote Booklist", KeyEvent.VK_T);
+		bookListMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));
+		bookListMenuItem.getAccessibleContext().setAccessibleDescription("This doesn't really do anything");
+		bookListMenuItem.addActionListener( new ActionListener () 
+		{
+			public void actionPerformed (ActionEvent e) 
+			{
+				selectBooks(new JTextField());
+			} // end method
+		} );// end inner class
+		menu.add(bookListMenuItem);
+		
+		this.setJMenuBar(menuBar);
 		
 		validate ();
 		//pack();
@@ -150,6 +227,14 @@ public class GUI extends JFrame
 			public void actionPerformed (ActionEvent e) 
 			{
 				submitDirectory (browseBooksField.getText(), browseStorageField.getText(), browseHashField.getText());
+			} // end method
+		} );// end inner class
+		
+		selectButton.addActionListener ( new ActionListener () 
+		{
+			public void actionPerformed (ActionEvent e) 
+			{
+				selectBooks (selectField);
 			} // end method
 		} );// end inner class
 		
@@ -279,12 +364,134 @@ public class GUI extends JFrame
 	{
 		parser.parserMain(gutBooksDirectory, bookStorageDirectory, hashesFileDirectory);
 	} 
+	
+	public void selectBooks (JTextField setTextField) 
+	{
+		specialized_ops so = new specialized_ops();
+		String[] bookTitles = so.mongo_retrieve_parsed_titles();
+		//Retriever retriever = new Retriever();
 
+		//ArrayList<String> resultsList = retriever.findSearchTerms(searchField.getText(), logicalOperator, searchField2.getText());
+		
+		/*
+		String[] bookTitles = new String[]{ "Title ", "Title 2", "Title 3","Title 4", "Title 5", 
+				"Title 6", "Title 7", "Title 8","Title 9", "Title 10", 
+				"Title 11", "Title 12", "Title 13","Title 14", "Title 15",
+				"Title 16", "Title 17", "Title 18","Title 19", "Title 20",
+				"Title 21", "Title 22", "Title 23","Title 24", "Title 25",
+				"Title 26", "Title 27", "Title 28","Title 29", "Title 30",}; 
+		*/
+		//table variables
+		frame = new JFrame("");
+		panel = new JPanel(new GridLayout(2, 0));
+		panel2 = new JPanel(new GridLayout(1, 0));
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.pack();
+		
+	    final JTable table=new JTable();
+		
+	    //the model of the table
+	    DefaultTableModel model=new DefaultTableModel()
+	    {
+			private static final long serialVersionUID = 1L;
+		
+			public Class<?> getColumnClass(int column)
+			{
+				switch(column)
+				{
+				case 0:
+					return Boolean.class;
+				case 1:
+					return String.class;
+
+				default:
+					return String.class;
+				}
+			}
+	    };
+
+	    //assign the model to the table
+	    table.setModel(model);
+	    model.addColumn("Select");
+	    model.addColumn("");
+
+	    //the rows
+	    for(int i=0; i<=bookTitles.length-1; i++)
+	    {
+	      model.addRow(new Object[0]);
+	      model.setValueAt(false, i, 0);
+	      model.setValueAt(bookTitles[i], i, 1);
+	    }
+	    
+	    //submit button
+	    JButton submitButton = new JButton("Submit");
+	    submitButton.addActionListener(new ActionListener() {
+
+	      @Override
+	      public void actionPerformed(ActionEvent arg0) {
+	    	  ArrayList<String> checkedBooks = new ArrayList<>();
+	        //checked row
+	        for(int i=0; i<table.getRowCount(); i++)
+	        {
+	          Boolean checked = Boolean.valueOf(table.getValueAt(i, 0).toString());
+	          String col = table.getValueAt(i, 1).toString();
+
+	          //display
+	          if(checked)
+	          {
+	            //JOptionPane.showMessageDialog(null, col);
+	        	  checkedBooks.add(col);
+	          }
+	        }
+	        for (String title : checkedBooks) {
+	        	specialized_ops so = new specialized_ops();
+	        	RemoteIndexer ri = new RemoteIndexer();
+	        	ri.insert(title, "icelandic author", "unzipped", so.mongo_retrieve_sentences(title));
+	        }
+
+	      }
+	    });
+	    
+
+		table.setFillsViewportHeight(true);
+		 
+		scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		table.setAutoscrolls(true);
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		table.getColumnModel().getColumn(0).setPreferredWidth(100);
+		table.getColumnModel().getColumn(1).setPreferredWidth(screen.width - 100);
+
+		panel.add(submitButton);
+		panel2.add(scrollPane);    
+		panel.setOpaque(true);
+
+		frame = new JFrame("Book Titles");		
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.pack();
+		frame.setSize(500, 310);
+        frame.setLocation( // Center window on screen.
+                (screen.width - 500)/2, 
+                (screen.height - 500)/2 );
+  
+		frame.add (panel, BorderLayout.PAGE_START);
+		frame.add (panel2, BorderLayout.CENTER);
+
+		frame.setVisible(true);  
+		frame.validate ();
+
+		//message dialog
+		JOptionPane.showMessageDialog(frame,
+				"Maximize to see the book titles in full screen or use the scroll bar",
+				"Message",
+				JOptionPane.PLAIN_MESSAGE);	
+	} 
+	
+	
 	//search method 
 	public void search (String searchWord1, String logicalOperator, String searchWord2) 
 	{
-		
-		Retriever retriever = new Retriever();
+		RemoteRetriever retriever = new RemoteRetriever();
+		//Retriever retriever = new Retriever();
 		/*
 		//message dialog
 		Component frame0 = null;		
@@ -293,7 +500,7 @@ public class GUI extends JFrame
 		    "Message",
 		    JOptionPane.PLAIN_MESSAGE);
 		*/
-		ArrayList<String> resultsList = retriever.findSearchTerms(searchField.getText(), logicalOperator, searchField2.getText());
+		ArrayList<String> resultsList = retriever.findSearchTerms(searchField.getText(), logicalOperator, searchField2.getText(), searchWord2);
 		
 		//table variables
 		frame = new JFrame("");
@@ -341,7 +548,7 @@ public class GUI extends JFrame
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setContentPane(panel);
 		frame.pack();
-		frame.setSize(500, 300);
+		frame.setSize(500, 310);
         frame.setLocation( // Center window on screen.
                 (screen.width - 500)/2, 
                 (screen.height - 500)/2 );
@@ -360,6 +567,26 @@ public class GUI extends JFrame
 	public static void main (String [] args) 
 	{
 		GUI main = new GUI ();	
+		
+//specialized_ops so = new specialized_ops();
+		/*
+		titlesAvailable = so.mongo_retrieve_parsed_titles();
+		for (String title : titlesAvailable) {
+			System.out.println(title);
+		}
+		JTextField setTextField = new JTextField("irnewtextfield");
+		main.selectBooks(setTextField);
+		*/
+		
+		/*
+		RemoteIndexer ri = new RemoteIndexer();
+		String[] remoteSentences = so.mongo_retrieve_sentences("Warlord of Mars");
+		for(String s : remoteSentences) {
+			System.out.println(s + "<----- retrieved");
+		}
+		//String[] testSentences = {"sentence 1", "sentence 2", "sentence 3"};
+		ri.insert("testTitle","testAuthor", "testunzipped", remoteSentences);
+		*/
 	} 
 
 }
