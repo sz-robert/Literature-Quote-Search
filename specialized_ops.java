@@ -61,7 +61,7 @@ public class specialized_ops {
 		try {
 			//MongoClient mongo = new MongoClient( "ec2-34-222-109-70.us-west-2.compute.amazonaws.com" , 9999 );
 			String password = "password123"; 
-			ServerAddress get_to_em = new ServerAddress("ec2-54-185-61-81.us-west-2.compute.amazonaws.com" , 9999); 
+			ServerAddress get_to_em = new ServerAddress("ec2-34-210-26-240.us-west-2.compute.amazonaws.com" , 9999); 
 			MongoCredential credential = MongoCredential.createCredential("terminator", "t1000", password.toCharArray());
 			MongoClient mongoClient = new MongoClient(get_to_em, Arrays.asList(credential));
 			DB db = mongoClient.getDB( "t1000" );
@@ -125,7 +125,7 @@ public class specialized_ops {
 		try {
 			//MongoClient mongo = new MongoClient( "ec2-34-222-109-70.us-west-2.compute.amazonaws.com" , 9999 );
 			String password = "password123"; 
-			ServerAddress get_to_em = new ServerAddress("ec2-54-185-61-81.us-west-2.compute.amazonaws.com" , 9999); 
+			ServerAddress get_to_em = new ServerAddress("ec2-34-210-26-240.us-west-2.compute.amazonaws.com" , 9999); 
 			MongoCredential credential = MongoCredential.createCredential("terminator", "t1000", password.toCharArray());
 			MongoClient mongoClient = new MongoClient(get_to_em, Arrays.asList(credential));
 			DB db = mongoClient.getDB( "t1000" );
@@ -186,7 +186,7 @@ public class specialized_ops {
 		try {
 			//MongoClient mongo = new MongoClient( "ec2-34-222-109-70.us-west-2.compute.amazonaws.com" , 9999 );
 			String password = "password123"; 
-			ServerAddress get_to_em = new ServerAddress("ec2-54-185-61-81.us-west-2.compute.amazonaws.com" , 9999); 
+			ServerAddress get_to_em = new ServerAddress("ec2-34-210-26-240.us-west-2.compute.amazonaws.com" , 9999); 
 			MongoCredential credential = MongoCredential.createCredential("terminator", "t1000", password.toCharArray());
 			MongoClient mongoClient = new MongoClient(get_to_em, Arrays.asList(credential));
 			DB db = mongoClient.getDB( "t1000" );
@@ -244,7 +244,7 @@ public class specialized_ops {
 		try {
 			//MongoClient mongo = new MongoClient( "ec2-34-222-109-70.us-west-2.compute.amazonaws.com" , 9999 );
 			String password = "password123"; 
-			ServerAddress get_to_em = new ServerAddress("ec2-54-185-61-81.us-west-2.compute.amazonaws.com" , 9999); 
+			ServerAddress get_to_em = new ServerAddress("ec2-34-210-26-240.us-west-2.compute.amazonaws.com" , 9999); 
 			MongoCredential credential = MongoCredential.createCredential("terminator", "t1000", password.toCharArray());
 			MongoClient mongoClient = new MongoClient(get_to_em, Arrays.asList(credential));
 			DB db = mongoClient.getDB( "t1000" );
@@ -278,7 +278,7 @@ public class specialized_ops {
 		try {
 			//MongoClient mongo = new MongoClient( "ec2-34-222-109-70.us-west-2.compute.amazonaws.com" , 9999 );
 			String password = "password123"; 
-			ServerAddress get_to_em = new ServerAddress("ec2-54-185-61-81.us-west-2.compute.amazonaws.com" , 9999); 
+			ServerAddress get_to_em = new ServerAddress("ec2-34-210-26-240.us-west-2.compute.amazonaws.com" , 9999); 
 			MongoCredential credential = MongoCredential.createCredential("terminator", "t1000", password.toCharArray());
 			MongoClient mongoClient = new MongoClient(get_to_em, Arrays.asList(credential));
 			DB db = mongoClient.getDB( "t1000" );

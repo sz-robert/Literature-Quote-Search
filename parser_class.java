@@ -287,7 +287,7 @@ public class parser_class {
 						append_log("BOOK_TITLE: " + book_title); 
 						
 						Indexer indexer = new Indexer();
-						indexer.insert(book_title, book_author, unzipped, book_senteces2);
+						indexer.insert(book_title, book_author, unzipped, book_senteces2, true);
 						}							//so the caller can get it	
 					}
 				}
