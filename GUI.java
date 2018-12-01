@@ -226,7 +226,7 @@ public class GUI extends JFrame
 			} // end method
 		} );// end inner class
 		
-		/*
+		
 		selectButton.addActionListener ( new ActionListener () 
 		{
 			public void actionPerformed (ActionEvent e) 
@@ -234,7 +234,7 @@ public class GUI extends JFrame
 				selectBooks (selectField);
 			} // end method
 		} );// end inner class
-		*/
+		
 		searchButton.addActionListener ( new ActionListener () 
 		{
 			public void actionPerformed (ActionEvent e) {
@@ -419,8 +419,8 @@ public class GUI extends JFrame
 	    }
 	    
 	    //submit button
-	    JButton submitRemoteListButton = new JButton("Submit");
-	    submitRemoteListButton.addActionListener(new ActionListener() {
+	    JButton submitButton = new JButton("Submit Remote List");
+	    submitButton.addActionListener(new ActionListener() {
 
 	      @Override
 	      public void actionPerformed(ActionEvent arg0) {
@@ -441,7 +441,7 @@ public class GUI extends JFrame
 	        for (String title : checkedBooks) {
 	        	specialized_ops so = new specialized_ops();
 	        	Indexer ri = new Indexer();
-	        	ri.insert(title, "icelandic author", "unzipped", so.mongo_retrieve_sentences(title), localMenuItem.isSelected() );
+	        	ri.insert(title, "remote author", "unzipped", so.mongo_retrieve_sentences(title), localMenuItem.isSelected() );
 	        }
 
 	      }
