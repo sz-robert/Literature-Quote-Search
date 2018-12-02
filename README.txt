@@ -26,3 +26,7 @@ An alternative to installing MongdDB and creating a folder of zipped files is to
 4. Select the books you want to search.
 5. Click the "Submit Remote List" button.
 After the books are processed on the remote server, they can be searched. Books retrieved from the remote server can be stored on a local database. To store the book(s) locally, start MongoDB with mongod command from the command line, ensure directory locations are provided (first directory does not have to contain any zipped books), and change step 2 to select "Use Local Database".
+
+Search Constraints
+Searches can use AND/OR/NOT operations and can be limited to a specific author or title. The author input has to be exact. For example, a search for "Charles Dickens" will work but "Charles" or "Dickens" won't return any results. The title also has to be exact.
+To use AND or OR operations, type several words into the "Search Terms" field, choose either AND or OR from the drop down box, and press the "Search" button. To exclude certain terms, type them into the "Exclude Words" fields.
