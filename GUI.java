@@ -59,14 +59,17 @@ public class GUI extends JFrame
 	JButton selectButton = new JButton ("Select");
 	JButton searchButton = new JButton ("Search");
 	JButton submitButton = new JButton ("Process Books");
-	JLabel browseLabel = new JLabel ("Zipped books: ");
-	JLabel browseStorageLabel = new JLabel ("Unzip Books To: ");
+	JLabel browseLabel = new JLabel ("Zipped books:           ");
+	JLabel browseStorageLabel = new JLabel ("Unzip Books To:       ");
 	JLabel browseHashLabel = new JLabel ("Parsed Books Log: ");
-	JLabel searchLabel = new JLabel ("Search Terms: ");
+	JLabel searchLabel = new JLabel ("Search Terms:    ");
 	JLabel searchLabel2 = new JLabel ("Exclude Words: ");
-	JLabel selectLabel = new JLabel ("Search Title: ");
-	JLabel authorLabel = new JLabel ("Search Author: ");
-	//JLabel blankLabel = new JLabel ("                    ");//blank label to create gap 
+	JLabel spacerLabel1 = new JLabel ("                ");
+	JLabel selectLabel = new JLabel ("Search Title:       ");
+	JLabel spacerLabel2 = new JLabel ("                ");
+	JLabel authorLabel = new JLabel ("Search Author:   ");
+	JLabel spacerLabel3 = new JLabel ("                ");
+	JLabel blankLabel = new JLabel ("                    ");//blank label to create gap 
 	JScrollPane scrollPane;
 	
 	JFrame frame;
@@ -94,14 +97,20 @@ public class GUI extends JFrame
 	//constructor to build the main GUI 
 	public GUI () 
 	{	
+		
+		browseBooksField.setText("C:\\Users\\rpssz\\Downloads\\gut_books");
+		browseStorageField.setText("C:\\\\Users\\\\rpssz\\\\Downloads\\gutenberg_book_storage");
+		browseHashField.setText("C:\\Users\\rpssz\\Downloads\\ph2\\new.txt");
+		
+		
 		setTitle ("Search Engine");
-		setSize(800, 370);
+		setSize(500, 450);
 		setLocation( // Center window on screen.
 				(screen.width - 600)/2, 
 				(screen.height - 600)/2 );
 		setLayout(new BorderLayout());
 		browsePanel.setLayout(new GridLayout(4,1));
-		searchPanel.setLayout(new GridLayout(4,1));
+		searchPanel.setLayout(new GridLayout(8,8));
 		setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
 	
 		browseBooksPanel.add (browseLabel);
@@ -125,10 +134,12 @@ public class GUI extends JFrame
 		
 		selectPanel.add(selectLabel);
 		selectPanel.add (selectField);
+		selectPanel.add(spacerLabel3);
 		//selectPanel.add (selectButton);
 		
 		authorPanel.add(authorLabel);
 		authorPanel.add(authorField);
+		authorPanel.add(spacerLabel1);
 		
 		searchPanel1.add(searchLabel);
 		searchPanel1.add (searchField);
@@ -140,15 +151,16 @@ public class GUI extends JFrame
 		
 		searchPanel2.add(searchLabel2);
 		searchPanel2.add (excludeField);
+		searchPanel2.add(spacerLabel2);
 		searchButtonPanel.add (searchButton);
 		
-		searchPanel.add(searchPanel1, BorderLayout.CENTER);
+		searchPanel.add(searchPanel1, BorderLayout.WEST);
 		searchPanel.add(searchPanel2, BorderLayout.SOUTH);
 		searchPanel.add(selectPanel);
 		searchPanel.add(authorPanel);
-		searchPanel.add(new JLabel("   "));
+	//	searchPanel.add(new JLabel("   "));
 		searchPanel.add(searchButtonPanel);
-		searchPanel.add(new JLabel("   "));
+	//	searchPanel.add(new JLabel("   "));
 		
 		add (browsePanel, BorderLayout.PAGE_START);
 		add (searchPanel, BorderLayout.CENTER);

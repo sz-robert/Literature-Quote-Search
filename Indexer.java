@@ -35,18 +35,7 @@ public class Indexer {
 	private Hashtable<String, Word> wordStatistics = new Hashtable<>();
 	private List<WriteModel<Document>> wordDocuments = new ArrayList<>();
 	
-	public Indexer () {
-		/*
-		wordsCollection.createIndex(Indexes.compoundIndex(Indexes.ascending("word"), 
-				Indexes.ascending("bookId"),
-				Indexes.ascending("author"),
-				Indexes.ascending("bookId"),
-				Indexes.descending("totalOccurrences")));
-		booksCollection.createIndex(Indexes.compoundIndex(Indexes.ascending("bookId"), 
-				Indexes.ascending("title"),
-				Indexes.ascending("author")));
-		*/
-	}
+	public Indexer () {	}
 	
 	public void insert(String book_title, String book_author, String unzipped, String[] book_sentences, boolean isLocal) {
 		if(isLocal) {
@@ -80,7 +69,6 @@ public class Indexer {
         
         for(String key : wordStatistics.keySet()) {
     		Word currentWord = wordStatistics.get(key);
-    		System.out.println("Inserting: " );
     		Document wordDocument = new Document("word", currentWord.getName())
     		.append("bookId", uniqueId)
 			.append("title", book_title)
@@ -98,11 +86,11 @@ public class Indexer {
 	    	bulkWriteOptions.bypassDocumentValidation(true);
 	    	//bulk write
         	wordsCollection.bulkWrite(wordDocuments, bulkWriteOptions);
-        	System.out.println("Bulk Inserted:words for " +  book_title);
+        	System.out.println("Bulk Inserted words for " +  book_title);
 	}
 	
 	private void updateWordStatistics(String word, int sentencePosition) {
-		System.out.println("Attempting to insert word from updateWords: " + word);
+		System.out.println("Inserting from updateWords: " + word);
 		if (wordStatistics.containsKey(word)) {
 			Word existingWord = wordStatistics.get(word);
 			//existingWord.setName(word);
@@ -138,15 +126,24 @@ public class Indexer {
 	}
 	
 	private void createLocalDBConnection() {
-		System.out.println("creating local connection");
+		System.out.println("Creating local connection");
 		mongoClient = new MongoClient("localhost", 27017);
 		db = mongoClient.getDatabase("library");
 		wordsCollection = db.getCollection("wordsM2");
 		booksCollection = db.getCollection("booksM2");
-		System.out.println("finished creating local connection");
+		System.out.println("Local connection created.");
+		wordsCollection.createIndex(Indexes.compoundIndex(Indexes.ascending("word"), 
+				Indexes.ascending("bookId"),
+				Indexes.ascending("author"),
+				Indexes.ascending("bookId"),
+				Indexes.descending("totalOccurrences")));
+		booksCollection.createIndex(Indexes.compoundIndex(Indexes.ascending("bookId"), 
+				Indexes.ascending("title"),
+				Indexes.ascending("author")));
 		
 	}
 	private void createRemoteDBConnection() {
+		System.out.println("Creating remote connection");
 		password = "password123"; 
 		get_to_em = new ServerAddress("ec2-34-210-26-240.us-west-2.compute.amazonaws.com" , 9999); 
 		credential = MongoCredential.createCredential("terminator", "t1000", password.toCharArray());
@@ -155,6 +152,15 @@ public class Indexer {
 		
 		wordsCollection = db.getCollection("wordsM2");
 		booksCollection = db.getCollection("booksM2");
+		System.out.println("Remote connection created.");
+		wordsCollection.createIndex(Indexes.compoundIndex(Indexes.ascending("word"), 
+				Indexes.ascending("bookId"),
+				Indexes.ascending("author"),
+				Indexes.ascending("bookId"),
+				Indexes.descending("totalOccurrences")));
+		booksCollection.createIndex(Indexes.compoundIndex(Indexes.ascending("bookId"), 
+				Indexes.ascending("title"),
+				Indexes.ascending("author")));
 	}
 }
 
