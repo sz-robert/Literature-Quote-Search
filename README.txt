@@ -25,4 +25,4 @@ An alternative to installing MongdDB and creating a folder of zipped files is to
 3. Select "Get Remote Booklist"
 4. Select the books you want to search.
 5. Click the "Submit Remote List" button.
-After the books are processed on the remote server, they can be searched. Books retrieved from the remote server can be stored on a local database. To store the book(s) locally, start MongoDB with mongod command from the command line, make sure directory locations are not empty, and change step 2 to select "Use Local Database".
+After the books are processed on the remote server, they can be searched. Books retrieved from the remote server can be stored on a local database. To store the book(s) locally, start MongoDB with mongod command from the command line, ensure directory locations are provided, and change step 2 to select "Use Local Database".
