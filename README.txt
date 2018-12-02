@@ -4,8 +4,8 @@ The purpose of the program is to retrieve quotes from Gutenberg.org ebooks conta
 Installation Instructions:
 1. Download Literature-Quote-Search-Engine.jar from the repository.
 2. Download and install Java 8.
-3. Download and install MongoDB 4.
-4. Start MongoDB with mongod command from the command line.
+3. Download and install MongoDB 4. (Not necessary if using only remote features.)
+4. Start MongoDB with mongod command from the command line. (Not necessary if using only remote features.)
 5. Run Literature-Quote-Search-Engine.jar from the command line using java -jar Literature-Quote-Search-Engine.jar
 
 User Guide
