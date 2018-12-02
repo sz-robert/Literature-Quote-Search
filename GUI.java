@@ -97,12 +97,6 @@ public class GUI extends JFrame
 	//constructor to build the main GUI 
 	public GUI () 
 	{	
-		
-		browseBooksField.setText("C:\\Users\\rpssz\\Downloads\\gut_books");
-		browseStorageField.setText("C:\\\\Users\\\\rpssz\\\\Downloads\\gutenberg_book_storage");
-		browseHashField.setText("C:\\Users\\rpssz\\Downloads\\ph2\\new.txt");
-		
-		
 		setTitle ("Search Engine");
 		setSize(500, 450);
 		setLocation( // Center window on screen.
