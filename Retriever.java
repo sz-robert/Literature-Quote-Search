@@ -2,10 +2,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import javax.swing.JOptionPane;
+
 import org.bson.Document;
 import org.json.simple.JSONObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
+import com.mongodb.MongoSocketOpenException;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCollection;
@@ -46,7 +49,6 @@ public class Retriever {
 							findSentences(wordsList, results, logicalOperator, searchTerms, 1000, 0, excludedTerms);
 			} else 
 			if (logicalOperator.equals("OR")) {
-					results.add("Logical Operator OR chosen.");
 					// Max Results is 1000
 					int maxResults = 1000;
 					int skip = 0;
@@ -254,21 +256,29 @@ public class Retriever {
 	}
 	private void createLocalDBConnection() {
 		System.out.println("creating local connection");
+		try {
 		mongoClient = new MongoClient("localhost", 27017);
 		db = mongoClient.getDatabase("library");
 		wordsCollection = db.getCollection("wordsM2");
 		booksCollection = db.getCollection("booksM2");
+		} catch(Exception e) {
+			JOptionPane.showMessageDialog(null, "Error connecting to database", "Exception", JOptionPane.WARNING_MESSAGE);
+		}
 		System.out.println("Local connection created.");
 		
 	}
 	private void createRemoteDBConnection() {
 		System.out.println("creating remote connection");
-		password = "password123"; 
-		get_to_em = new ServerAddress("ec2-34-210-26-240.us-west-2.compute.amazonaws.com" , 9999); 
-		credential = MongoCredential.createCredential("terminator", "t1000", password.toCharArray());
-		mongoClient = new MongoClient(get_to_em, Arrays.asList(credential));
-		db = mongoClient.getDatabase("t1000");
-		
+		try {
+			System.out.println("Creating remote connection");
+			password = "password123"; 
+			get_to_em = new ServerAddress("ec2-34-210-26-240.us-west-2.compute.amazonaws.com" , 9999); 
+			credential = MongoCredential.createCredential("terminator", "t1000", password.toCharArray());
+			mongoClient = new MongoClient(get_to_em, Arrays.asList(credential));
+			db = mongoClient.getDatabase("t1000");
+		} catch(Exception e) {
+			JOptionPane.showMessageDialog(null, "Error connecting to database", "Exception", JOptionPane.WARNING_MESSAGE);
+		}
 		wordsCollection = db.getCollection("wordsM2");
 		booksCollection = db.getCollection("booksM2");
 		System.out.println("Remote connection created.");
