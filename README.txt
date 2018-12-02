@@ -9,7 +9,7 @@ Installation Instructions:
 5. Run Literature-Quote-Search-Engine.jar from the command line using java -jar Literature-Quote-Search-Engine.jar
 
 User Guide
-Local Searches:
+Searches on PCs with MongoDB installed:
 The program asks for three directories:
 1. A directory containing zipped books downloaded from gutenberg.org such as https://www.gutenberg.org/files/46/46-0.zip and https://www.gutenberg.org/files/3300/3300-8.zip
 2. An empty directory for storing unzipped files
@@ -25,4 +25,4 @@ An alternative to installing MongdDB and creating a folder of zipped files is to
 3. Select "Get Remote Booklist"
 4. Select the books you want to search.
 5. Click the "Submit Remote List" button.
-After the books are processed on the remote server, they can be searched. Books retrieved from the remote server can be stored on a local database. To store the book(s) locally, start MongoDB with mongod command from the command line, and change step 2 to select "Use Local Database".
+After the books are processed on the remote server, they can be searched. Books retrieved from the remote server can be stored on a local database. To store the book(s) locally, start MongoDB with mongod command from the command line, make sure directory locations are not empty, and change step 2 to select "Use Local Database".
