@@ -1,4 +1,4 @@
-# Literature-Quote-Search_Web-Version
+# Literature-Quote-Search_Web-Version(Moogle)
 
 This document is created to display the Angular version of front end of the project on a web server.
 Click on the link bellow to enter the "Moogle" web site. (Moogle web site is the web version of the Search Engine Project.)
