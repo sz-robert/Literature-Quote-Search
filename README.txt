@@ -1,7 +1,7 @@
 Overview:
 The purpose of the program is to retrieve quotes from Gutenberg.org ebooks containing search terms.
 
-1. Search Engine Desktop Application (Moogle) 
+1. Search Engine Desktop Application
 
 1.1. Installation Instructions:
 1. Download Literature-Quote-Search-Engine.jar from the repository.
