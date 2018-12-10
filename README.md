@@ -8,7 +8,8 @@ Note: In case that clicking on the link does not work, copy and paste it in your
 
 The display of the web site is located at:
 
-https://github.com/sz-robert/Literature-Quote-Search/blob/frontend_versions_ps/Milestone3_Example_Input.PNG
+https://github.com/sz-robert/Literature-Quote-Search/blob/frontend_versions_ps/Example_WebApp_Input.PNG
+https://github.com/sz-robert/Literature-Quote-Search/blob/frontend_versions_ps/Example_WebApp_Output.PNG
 
 
 Source: The sourse code for this web page is located at: 
