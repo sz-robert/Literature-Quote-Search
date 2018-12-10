@@ -22,7 +22,7 @@ The program asks for three directories:
      3. An empty text file for keeping a record of processed books such as log.txt.
 
      After providing the required directories, click the "Process Books" button to store the books in the MongoDB database.
-     After processing is completed, type a search term into the textbox labeled "Search Terms and press the "Search" button to retrieve      quotes containing the search term. AND/OR/NOT operations are planned for the next release.
+     After processing is completed, type a search term into the textbox labeled "Search Terms and press the "Search" button to retrieve quotes containing the search term. AND/OR/NOT operations are planned for the next release.
 
 1.3. Remote Searches
 
@@ -36,8 +36,8 @@ An alternative to installing MongdDB and creating a folder of zipped files is to
      After the books are processed on the remote server, they can be searched. Books retrieved from the remote server can be stored on a      local database. To store the book(s) locally, start MongoDB with mongod command from the command line, ensure directory locations      are provided (first directory does not have to contain any zipped books), and change step 2 to select "Use Local Database".
 
 1.4. Search Constraints
-     Searches can use AND/OR/NOT operations and can be limited to a specific author or title. The author input has to be exact. For         example, a search for "Charles Dickens" will work but "Charles" or "Dickens" won't return any results. The title also has to be         exact.
-    To use AND or OR operations, type several words into the "Search Terms" field, choose either AND or OR from the drop down box, and       press the "Search" button. To exclude certain terms, type them into the "Exclude Words" fields.
+     Searches can use AND/OR/NOT operations and can be limited to a specific author or title. The author input has to be exact. For          example, a search for "Charles Dickens" will work but "Charles" or "Dickens" won't return any results. The title also has to be        exact.
+     To use AND or OR operations, type several words into the "Search Terms" field, choose either AND or OR from the drop down box, and      press the "Search" button. To exclude certain terms, type them into the "Exclude Words" fields.
 
 2. Search Engine Web Application (Moogle)
 
