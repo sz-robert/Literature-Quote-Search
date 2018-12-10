@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -286,8 +287,24 @@ public class parser_class {
 						
 						append_log("BOOK_TITLE: " + book_title); 
 						
-						Indexer indexer = new Indexer();
-						indexer.insert(book_title, book_author, unzipped, book_senteces2, true);
+						//Indexer indexer = new Indexer();
+						Book book = new Book(book_title, book_author, unzipped, book_senteces2);
+						while (Indexer.books.size() >= 50) {
+							try {
+								TimeUnit.SECONDS.sleep(1);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+						Indexer.books.add(book);
+						Indexer indexer = new Indexer(GUI.localDatabase);
+						//indexer.insert(book, true);
+						Thread thread = new Thread(indexer);
+						thread.start();
+						
+						//indexer.insert(book, true);
+						//indexer.insert(book_title, book_author, unzipped, book_senteces2, true);
 						}							//so the caller can get it	
 					}
 				}

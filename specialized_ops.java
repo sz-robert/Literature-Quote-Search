@@ -50,7 +50,7 @@ public class specialized_ops {
 						//were going to store raw book text
 						//and book split sentences to make the index portion easier to do. 
 	
-	
+	public MongoConnection conn;
 	//get all books currently parsed into MONGO CLOUD! 
 	public String [] mongo_retrieve_parsed_titles()	//we can see all the books in 
 													//out cloud for the indexer
@@ -177,7 +177,59 @@ public class specialized_ops {
 		
 		return null; 
 	}
-	
+	public String [] mongo_retrieve_sentences(String book_title, MongoConnection conn)
+	{
+		DBCursor cursor3 = null; 
+		boolean book_present = false; 
+		String [] array_for_return = null; 
+		try {
+			BasicDBObject fields = new BasicDBObject();
+			fields.put("book_sentences", 1);	 //lets just get the book sentences so we dont 
+										//slow everything down with all that downloading. 
+			BasicDBObject whereQuery = new BasicDBObject();
+			  whereQuery.put("book_title", book_title);
+			  //whereQuery.put("format_type", book_type);
+			  whereQuery.put("parsed", true);
+			   cursor3 = conn.coll.find(whereQuery, fields);
+			  if(cursor3.size() == 0)
+			  {
+				  System.out.println("ERROR: Book not in cloud.");
+			  }
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+			return null; 
+		}
+		System.out.println("SUCCESS: Book in cloud. Retrieving sentences");
+		try {
+			int throttle = 0; 
+			while(cursor3.hasNext()) {
+			    DBObject resultElement = cursor3.next();
+			    Map resultElementMap = resultElement.toMap();  
+			    BasicDBList scores = (BasicDBList) resultElementMap.get("book_sentences");
+			    if(scores.size() != 0)
+			    {
+			    		array_for_return = new String[scores.size()]; 
+				    	//System.out.println("Storinng the sentences");
+				    for(Object i : scores)
+					    {
+					    	array_for_return[throttle] = (String)i; 
+					    	throttle += 1; 
+					    }
+			    }
+			    //Do something with the values
+			    return array_for_return; 
+			}
+		}
+		
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+		
+		return null; 
+	}
 	public String mongo_retrieve_entire_book(String book_title)
 	{
 		DBCursor cursor3 = null; 
