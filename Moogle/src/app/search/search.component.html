@@ -6,18 +6,12 @@
 <table *ngIf="searchResults">
   <thead>
   <tr>
-    <th>Name</th>
-    <th>Phone</th>
-    <th>Address</th>
+    <th>Result</th>
   </tr>
   </thead>
   <tbody>
   <tr *ngFor="let person of searchResults; let i=index">
-    <td>{{person.name}}</td>
-    <td>{{person.phone}}</td>
-    <td>{{person.address.street}}<br/>
-      {{person.address.city}}, {{person.address.state}} {{person.address.zip}}
-    </td>
+    <td>{{person.result}}</td>
   </tr>
   </tbody>
 </table>
