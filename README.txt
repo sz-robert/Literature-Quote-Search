@@ -4,7 +4,6 @@ The purpose of the program is to retrieve quotes from Gutenberg.org ebooks conta
 1. Search Engine Desktop Application:
 
 1.1. Installation Instructions:
-
      1. Download Literature-Quote-Search-Engine.jar from the repository.
      2. Download and install Java 8.
      3. Download and install MongoDB 4. (Not necessary if using only remote features.)
@@ -12,7 +11,6 @@ The purpose of the program is to retrieve quotes from Gutenberg.org ebooks conta
      5. Run Literature-Quote-Search-Engine.jar from the command line using java -jar Literature-Quote-Search-Engine.jar
 
 1.2. User Guide
-
 Searches on PCs with MongoDB installed:
 The program asks for three directories:
      1. A directory containing zipped books downloaded from gutenberg.org such as 
@@ -21,11 +19,10 @@ The program asks for three directories:
      2. An empty directory for storing unzipped files
      3. An empty text file for keeping a record of processed books such as log.txt.
 
-     After providing the required directories, click the "Process Books" button to store the books in the MongoDB database.
-     After processing is completed, type a search term into the textbox labeled "Search Terms and press the "Search" button to retrieve quotes containing the search term. AND/OR/NOT operations are planned for the next release.
+After providing the required directories, click the "Process Books" button to store the books in the MongoDB database.
+After processing is completed, type a search term into the textbox labeled "Search Terms and press the "Search" button to retrieve quotes containing the search term. AND/OR/NOT operations are planned for the next release.
 
 1.3. Remote Searches
-
 An alternative to installing MongdDB and creating a folder of zipped files is to use a remote search.
      1. Select "Server" from the menu bar.
      2. Select "Use Remote Database"
