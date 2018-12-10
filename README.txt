@@ -34,12 +34,16 @@ Searches can use AND/OR/NOT operations and can be limited to a specific author o
 To use AND or OR operations, type several words into the "Search Terms" field, choose either AND or OR from the drop down box, and press the "Search" button. To exclude certain terms, type them into the "Exclude Words" fields.
 
 2. Search Engine Web Application (Moogle) 
+
 The search engine project has been improved by using Angular frame work to add a web front end to the project. Click on the link bellow to enter the "Moogle" web site. (Moogle web site is the web version of the Search Engine Project.) 
 https://searchengineapp.github.io/ 
 Note: In case that clicking on the link does not work, copy and paste it in your browser. 
 
 The display of the web site is located at:
- https://github.com/sz-robert/Literature-Quote-Search/Example_WebApp_Input.PNG https://github.com/sz-robert/Literature-Quote-Search/Example_WebApp_Output.PNG 
+https://github.com/sz-robert/Literature-Quote-Search/tree/master/Example_WebApp_Input.PNG 
+https://github.com/sz-robert/Literature-Quote-Search/tree/master/Example_WebApp_Output.PNG 
+
 Source: The sourse code for this web page is located at:
- https://github.com/sz-robert/Literature-Quote-Search/Moogle/src 
+https://github.com/sz-robert/Literature-Quote-Search/tree/master/Moogle/src
+
 Enjoy Moogle!
