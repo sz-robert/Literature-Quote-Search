@@ -99,8 +99,7 @@ public class GUI extends JFrame
 	static MongoConnection remoteBooksList;
 	//constructor to build the main GUI 
 	public GUI () 
-	{
-		
+	{	
 		setTitle ("Search Engine");
 		setSize(500, 450);
 		setLocation( // Center window on screen.
@@ -637,9 +636,21 @@ public class GUI extends JFrame
 	//main method
 	public static void main (String [] args) 
 	{
-		localDatabase = new MongoConnection(true);
-		remoteDatabase = new MongoConnection(false);
-		remoteBooksList = new MongoConnection("books_collection");
+		try {
+			localDatabase = new MongoConnection(true);
+		} catch (Exception e)  {
+			System.out.println("Local Connection could not be established.");
+		}
+		try {
+			remoteDatabase = new MongoConnection(false);
+		} catch (Exception e) {
+			System.out.println("Remote Connection could not be established.");
+		}
+		try {
+			remoteBooksList = new MongoConnection("books_collection");
+		} catch(Exception e) {
+			System.out.println("Remote Connection to booklist could not be established.");
+		}
 		GUI main = new GUI ();	
 	} 
 
