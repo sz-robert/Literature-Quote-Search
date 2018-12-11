@@ -101,12 +101,6 @@ public class GUI extends JFrame
 	public GUI () 
 	{
 		
-		
-		//browseBooksField.setText("C:\\Users\\rpssz\\Downloads\\gut_books");
-		browseBooksField.setText("E:\\Gutenberg CD DVD\\pgdvd072006");
-		browseStorageField.setText("E:\\Gutenberg CD DVD\\gutenberg_book_storage");
-		browseHashField.setText("C:\\Users\\rpssz\\Downloads\\ph2\\new.txt");
-		
 		setTitle ("Search Engine");
 		setSize(500, 450);
 		setLocation( // Center window on screen.
