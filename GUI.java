@@ -101,6 +101,12 @@ public class GUI extends JFrame
 	public GUI () 
 	{
 		
+		
+		//browseBooksField.setText("C:\\Users\\rpssz\\Downloads\\gut_books");
+		browseBooksField.setText("E:\\Gutenberg CD DVD\\pgdvd072006");
+		browseStorageField.setText("E:\\Gutenberg CD DVD\\gutenberg_book_storage");
+		browseHashField.setText("C:\\Users\\rpssz\\Downloads\\ph2\\new.txt");
+		
 		setTitle ("Search Engine");
 		setSize(500, 450);
 		setLocation( // Center window on screen.
@@ -503,7 +509,7 @@ public class GUI extends JFrame
 																  searchInput.getTitleConstraint(), 
 																  searchInput.getAuthorConstraint(), 
 																  0, 
-																  1000);
+																  100);
 		JFrame nframe = new JFrame("Search ");		
 		//table variables
 		frame = new JFrame();
@@ -568,8 +574,8 @@ public class GUI extends JFrame
 	{
 		JFrame newFrame = new JFrame("Search");		
 		SearchInput si = searches.get(previousJFrame);
-		si.setSkip(si.getSkip() + 10);
-  	  	si.setLimit(si.getLimit() + 10);
+		si.setSkip(si.getSkip() + 100);
+  	  	si.setLimit(si.getLimit() + 100);
 		searches.put(newFrame, si);
   	  	
 		Retriever retriever = connection;

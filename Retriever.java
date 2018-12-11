@@ -29,26 +29,11 @@ public class Retriever {
 							findSentences(wordsList, results, logicalOperator, searchTerms, 1000, 0, excludedTerms);
 			} else 
 			if (logicalOperator.equals("OR")) {
-					// Max Results is 1000
-					int maxResults = 1000;
-					int orSkip = 0;
-					int orLimit = 1;
-					ArrayList<WordResult> wordsListInterlaced = new ArrayList<>();
-					while (maxResults > 0) {
-						for (String word : searchTermsList) {
-							ArrayList<WordResult> remoteWordResult = findWords(word, authorConstraint, titleConstraint, orSkip, orLimit);
-							for (WordResult wr : remoteWordResult) {
-								wordsListInterlaced.add(wr);
-							}
-						}
-						skip++;
-						limit++;
-						maxResults--;
-					}
+				for(String searchTerm : searchTermsList) {
+					wordsList = findWords(searchTerm, authorConstraint, titleConstraint, skip, limit);
 					//limit is 1000
-					for(WordResult wr : wordsListInterlaced)  {
-					}
-					findSentences(wordsListInterlaced, results, logicalOperator, searchTerms, 1, 0, excludedTerms);
+					findSentences(wordsList, results, logicalOperator, searchTerms, 1000, 0, excludedTerms);
+				}
 			} else {
 					results.add("Logical Operator must be AND/OR.");
 			}
@@ -147,6 +132,7 @@ public class Retriever {
 		        for(String location : wordResult.getLocations()) {
 		        	projectBookFields.put("sentence-" + location, 1);
 		        }
+		        
 				AggregateIterable<Document> aggregateSentences = conn.booksCollection.aggregate(
 			            Arrays.asList(
 			                    new Document("$match", new Document("bookId", wordResult.getBookId())),
