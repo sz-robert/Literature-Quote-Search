@@ -502,7 +502,7 @@ public class GUI extends JFrame
 												 selectField.getText(), 
 												 authorField.getText(),
 												 0,
-												 10);
+												 100);
 		ArrayList<String> resultsList = retriever.findQuotes(searchInput.getSearchTerms(), 
 																  searchInput.getLogicalOperator(), 
 																  searchInput.getExcludedterms(), 
