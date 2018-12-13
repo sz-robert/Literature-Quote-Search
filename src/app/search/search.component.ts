@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Person, SearchService } from '../shared';
+import { Component, OnInit, Input } from '@angular/core';
+import { /*Person*/ Quote, SearchService } from '../shared';
 
 @Component({
   selector: 'app-search',
@@ -7,9 +7,11 @@ import { Person, SearchService } from '../shared';
   styleUrls: ['./search.component.css']
 })
 
+
 export class SearchComponent implements OnInit {
-  query: string;
-  searchResults: Array< Person >;
+  //searchResults: Array< Person >;
+  searchResults: Array< Quote >;
+  @Input() query: string;
 
   constructor(private searchService: SearchService) { }
 
@@ -19,10 +21,11 @@ export class SearchComponent implements OnInit {
   search(): void {
     this.searchService.search(this.query).subscribe(
       (data: any) => { this.searchResults = data; },
+      //(retrieverCont: any) => { this.searchResults = retrieverCont; },
       error => console.log(error)
     );
   }
-
+  //change data to the name of the controller.
+  
+  
 }
-
-

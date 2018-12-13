@@ -14,20 +14,25 @@ export class SearchService {
     } else {
       q = q.toLowerCase();
     }
+
     return this.getAll().pipe(
-      map((data: any) => data
-        .filter(item => JSON.stringify(item).toLowerCase().includes(q)))
+     map((data: any) => data
+      .filter(item => JSON.stringify(item).toLowerCase().includes(q)))
     );
   }
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) { 
+  }
 
+  
+//This points the search to the json file 
   getAll() {
-    return this.http.get('assets/data/people.json');
+    //return this.http.get('assets/data/people.json');
+    return this.http.get('assets/data/retriever.json');
   }
 }
 
-export class Address {
+/*export class Address {
   street: string;
   city: string;
   state: string;
@@ -39,21 +44,27 @@ export class Address {
     this.state = obj && obj.state || null;
     this.zip = obj && obj.zip || null;
   }
-}
+}*/
 
-export class Person {
+//export class Person {
+  export class Quote {
   id: number;
-  name: string;
-  phone: string;
-  address: Address;
+  result: string;
+  //Quotes: string;
+  //name: string;
+  //phone: string;
+  //address: Address;
 
   constructor(obj?: any) {
     this.id = obj && Number(obj.id) || null;
-    this.name = obj && obj.name || null;
-    this.phone = obj && obj.phone || null;
-    this.address = obj && obj.address || null;
+    this.result = obj && obj.result || null;
+    //this.Quotes = obj && obj.Quotes || null;
+    //this.name = obj && obj.name || null;
+    //this.phone = obj && obj.phone || null;
+    //this.address = obj && obj.address || null;
   }
 }
+
 
 
 

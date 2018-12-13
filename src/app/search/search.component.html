@@ -1,23 +1,26 @@
 <h2>Search</h2>
 <form>
+  <!--Quotes="query" used to be name="query"-->
   <input type="search" name="query" [(ngModel)]="query" (keyup.enter)="search()">
   <button type="button" (click)="search()">Search</button>
 </form>
 <table *ngIf="searchResults">
   <thead>
   <tr>
-    <th>Name</th>
-    <th>Phone</th>
-    <th>Address</th>
+    <!--<th>Name</th>-->
+    <th>Result</th>
+    <!--<th>Phone</th>-->
+    <!--<th>Address</th>-->
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let person of searchResults; let i=index">
-    <td>{{person.name}}</td>
-    <td>{{person.phone}}</td>
-    <td>{{person.address.street}}<br/>
+  <!--<td><tr *ngFor="let person of searchResults; let i=index"></td>-->
+  <tr *ngFor="let q of searchResults; let i=index">
+    <td>{{q.result}}</td>
+    <!--<td>{{person.phone}}</td>-->
+    <!--<td>{{person.address.street}}<br/>
       {{person.address.city}}, {{person.address.state}} {{person.address.zip}}
-    </td>
+    </td>-->
   </tr>
   </tbody>
 </table>
