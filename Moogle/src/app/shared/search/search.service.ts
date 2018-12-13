@@ -23,7 +23,7 @@ export class SearchService {
   constructor(private http: HttpClient) { }
 
   getAll() {
-    return this.http.get('assets/data/people.json');
+    return this.http.get('assets/data/retreiver.json');
   }
 }
 

@@ -6,12 +6,14 @@
 <table *ngIf="searchResults">
   <thead>
   <tr>
-    <th>Result</th>
+    <th>Quotes</th>
+    <th>Citations</th>
   </tr>
   </thead>
   <tbody>
   <tr *ngFor="let person of searchResults; let i=index">
-    <td>{{person.result}}</td>
+    <td>{{person.quote}}</td>
+    <td>{{person.citation}}</td>
   </tr>
   </tbody>
 </table>
