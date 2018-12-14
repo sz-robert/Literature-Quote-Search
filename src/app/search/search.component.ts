@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { /*Person*/ Quote, SearchService } from '../shared';
+import { /*Person*/ Quotes, SearchService } from '../shared';
 
 @Component({
   selector: 'app-search',
@@ -10,7 +10,7 @@ import { /*Person*/ Quote, SearchService } from '../shared';
 
 export class SearchComponent implements OnInit {
   //searchResults: Array< Person >;
-  searchResults: Array< Quote >;
+  searchResults: Array< Quotes >;
   @Input() query: string;
 
   constructor(private searchService: SearchService) { }

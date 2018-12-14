@@ -28,7 +28,8 @@ export class SearchService {
 //This points the search to the json file 
   getAll() {
     //return this.http.get('assets/data/people.json');
-    return this.http.get('assets/data/retriever.json');
+    //return this.http.get('assets/data/retriever.json');
+    return this.http.get('assets/data/retriever2.json');
   }
 }
 
@@ -47,18 +48,20 @@ export class SearchService {
 }*/
 
 //export class Person {
-  export class Quote {
-  id: number;
-  result: string;
-  //Quotes: string;
+  export class Quotes {
+  //id: number;
+  //result: string;
+  quote: string;
+  citation: string;
   //name: string;
   //phone: string;
   //address: Address;
 
   constructor(obj?: any) {
-    this.id = obj && Number(obj.id) || null;
-    this.result = obj && obj.result || null;
-    //this.Quotes = obj && obj.Quotes || null;
+    //this.id = obj && Number(obj.id) || null;
+    //this.result = obj && obj.result || null;
+    this.quote = obj && obj.quote || null;
+    this.citation = obj && obj.citation || null;
     //this.name = obj && obj.name || null;
     //this.phone = obj && obj.phone || null;
     //this.address = obj && obj.address || null;

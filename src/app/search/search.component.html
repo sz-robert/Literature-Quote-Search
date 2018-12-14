@@ -8,7 +8,8 @@
   <thead>
   <tr>
     <!--<th>Name</th>-->
-    <th>Result</th>
+    <th>Results</th>
+    <th>Citation</th>
     <!--<th>Phone</th>-->
     <!--<th>Address</th>-->
   </tr>
@@ -16,7 +17,9 @@
   <tbody>
   <!--<td><tr *ngFor="let person of searchResults; let i=index"></td>-->
   <tr *ngFor="let q of searchResults; let i=index">
-    <td>{{q.result}}</td>
+    <!--<td>{{q.result}}</td>--><td>
+    <td>{{q.quote}}</td>
+    <td>{{q.citation}}</td>
     <!--<td>{{person.phone}}</td>-->
     <!--<td>{{person.address.street}}<br/>
       {{person.address.city}}, {{person.address.state}} {{person.address.zip}}
