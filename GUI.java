@@ -439,7 +439,6 @@ public class GUI extends JFrame
 	        		indexer = new Indexer(remoteDatabase);
 	        	}
 	        	indexer.insert(title, "remote author", "unzipped", so.mongo_retrieve_sentences(title, remoteBooksList));
-	        	System.out.println("Checked books total: " + checkedBooks.size());
 	        }
 	      }
 	    });
@@ -493,20 +492,17 @@ public class GUI extends JFrame
 												 (String) searchOptions.getSelectedItem(), 
 												 excludeField.getText(), 
 												 selectField.getText(), 
-												 authorField.getText(),
-												 0,
-												 100);
-		ArrayList<String> resultsList = retriever.findQuotes(searchInput.getSearchTerms(), 
-																  searchInput.getLogicalOperator(), 
-																  searchInput.getExcludedterms(), 
-																  searchInput.getTitleConstraint(), 
-																  searchInput.getAuthorConstraint(), 
-																  0, 
-																  100);
+												 authorField.getText()
+												 );
+		ArrayList<String> resultsList = retriever.findQuotes(searchInput, false);
 		JFrame nframe = new JFrame("Search ");		
 		//table variables
 		frame = new JFrame();
-		panel = new JPanel(new GridLayout(2, 0, 20, 20));
+		panel = new JPanel(new GridLayout(2, 0));
+		panel2 = new JPanel(new GridLayout(1, 0));
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.pack();
+		JLabel resultLabel = new JLabel("Results for: " + searchInput.getSearchTerms());
 	    JButton nextButton = new JButton("Next");
 	    nextButton.addActionListener(new ActionListener() {
 		      @Override
@@ -515,12 +511,10 @@ public class GUI extends JFrame
 		      }
 	    });
 		
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		//frame.setContentPane(panel);
-		frame.pack();
 
-		String column[] = {"Results for: " + searchInput.getSearchTerms()};
+		//String column[] = {"Results for: " + searchInput.getSearchTerms()};
+		String column[] = {" "};
 		DefaultTableModel defaultTableModel = new DefaultTableModel(column, 0);
 		  
 		defaultTableModel.setRowCount(0);
@@ -530,8 +524,8 @@ public class GUI extends JFrame
 		}
 
 		//table title
-		String[] tableTitle = {
-				"Search result for: " + searchInput.getSearchTerms()};
+		//String[] tableTitle = {
+				//"Search result for: " + searchInput.getSearchTerms()};
 
 		// initializing the GUI interface to display the search result in a table
 //		table = new JTable(searchResultTable, tableTitle);
@@ -540,20 +534,26 @@ public class GUI extends JFrame
 		 
 		scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		table.setAutoscrolls(true);
-		//table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		panel = new JPanel(new GridLayout(2,0));
-		panel.add(scrollPane);    
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		table.getColumnModel().getColumn(0).setPreferredWidth(10000);
+		
+		panel = new JPanel(new GridLayout(2,0));   
 		panel.add(nextButton);
+		panel.add(resultLabel);
+		panel2.add(scrollPane); 
 		panel.setOpaque(true);
 
 		nframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		nframe.setContentPane(panel);
+		//nframe.setContentPane(panel);
 		nframe.pack();
 		nframe.setSize(500, 310);
         nframe.setLocation( // Center window on screen.
                 (screen.width - 500)/2, 
                 (screen.height - 500)/2 );
   
+		nframe.add (panel, BorderLayout.PAGE_START);
+		nframe.add (panel2, BorderLayout.CENTER);
+		
 		//frame.setSize (screen.width, screen.height-40);
 		nframe.setVisible(true);  
 		searches.put(nframe, searchInput);
@@ -566,17 +566,21 @@ public class GUI extends JFrame
 	public void searchNext (JFrame previousJFrame, Retriever connection) 
 	{
 		JFrame newFrame = new JFrame("Search");		
-		SearchInput si = searches.get(previousJFrame);
-		si.setSkip(si.getSkip() + 100);
-  	  	si.setLimit(si.getLimit() + 100);
-		searches.put(newFrame, si);
+		SearchInput searchInput = searches.get(previousJFrame);
+		//si.setSkip(si.getSkip() + 100);
+  	  	//si.setLimit(si.getLimit() + 100);
+		searches.put(newFrame, searchInput);
   	  	
 		Retriever retriever = connection;
-		ArrayList<String> resultsList = retriever.findQuotes(si.getSearchTerms(), si.getLogicalOperator(), si.getExcludedterms(), si.getTitleConstraint(), si.getAuthorConstraint(), si.getSkip(), si.getLimit());
+		ArrayList<String> resultsList = retriever.findQuotes(searchInput, true);
 
 		//table variables
 		frame = new JFrame();
-		panel = new JPanel(new GridLayout(2, 0, 20, 20));
+		panel = new JPanel(new GridLayout(2, 0));
+		panel2 = new JPanel(new GridLayout(1, 0));
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.pack();
+		JLabel resultLabel = new JLabel("Results for: " + searchInput.getSearchTerms());
 	    JButton nextButton = new JButton("Next");
 	    nextButton.addActionListener(new ActionListener() {
 		      @Override
@@ -586,11 +590,10 @@ public class GUI extends JFrame
 		      }
 	    });
 		
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    
 
-		//frame.setContentPane(panel);
-		frame.pack();
-		String column[] = {"Results for: " + si.getSearchTerms()};
+		//String column[] = {"Results for: " + si.getSearchTerms()};
+	    String column[] = {" "};
 		DefaultTableModel defaultTableModel = new DefaultTableModel(column, 0);
 		  
 		defaultTableModel.setRowCount(0);
@@ -600,8 +603,8 @@ public class GUI extends JFrame
 		}
 
 		//table title
-		String[] tableTitle = {
-				"Search result for: " + si.getSearchTerms()};
+		//String[] tableTitle = {
+				//"Search result for: " + si.getSearchTerms()};
 
 		// initializing the GUI interface to display the search result in a table
 //		table = new JTable(searchResultTable, tableTitle);
@@ -610,19 +613,25 @@ public class GUI extends JFrame
 		 
 		scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		table.setAutoscrolls(true);
-		//table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		table.getColumnModel().getColumn(0).setPreferredWidth(10000);
+		
 		panel = new JPanel(new GridLayout(2,0));
-		panel.add(scrollPane);    
 		panel.add(nextButton);
+		panel.add(resultLabel);
+		panel2.add(scrollPane); 
 		panel.setOpaque(true);
 
 		newFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		newFrame.setContentPane(panel);
+		//newFrame.setContentPane(panel);
 		newFrame.pack();
 		newFrame.setSize(500, 310);
         newFrame.setLocation( // Center window on screen.
                 (screen.width - 500)/2, 
                 (screen.height - 500)/2 );
+        
+		newFrame.add (panel, BorderLayout.PAGE_START);
+		newFrame.add (panel2, BorderLayout.CENTER);
   
 		//frame.setSize (screen.width, screen.height-40);
 		newFrame.setVisible(true);  
@@ -641,6 +650,7 @@ public class GUI extends JFrame
 		} catch (Exception e)  {
 			System.out.println("Local Connection could not be established.");
 		}
+		
 		try {
 			remoteDatabase = new MongoConnection(false);
 		} catch (Exception e) {
@@ -651,6 +661,8 @@ public class GUI extends JFrame
 		} catch(Exception e) {
 			System.out.println("Remote Connection to booklist could not be established.");
 		}
+		
+		
 		GUI main = new GUI ();	
 	} 
 

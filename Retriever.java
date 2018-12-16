@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.bson.Document;
@@ -7,32 +8,36 @@ import com.mongodb.client.AggregateIterable;
 public class Retriever {
 	
 	MongoConnection conn; 
-	
+	SearchInput searchInput = null;
 	public Retriever (MongoConnection conn) {
 		this.conn = conn;
 	}
 	
-	public ArrayList<String> findQuotes(String searchTerms, 
-									    String logicalOperator, 
-									    String excludedTerms, 
-									    String authorConstraint, 
-									    String titleConstraint,
-									    int skip,
-									    int limit) {
+	public ArrayList<String> findQuotes(SearchInput searchInput, boolean isNext) {
+		this.searchInput = searchInput;
 		ArrayList<String> results = new ArrayList<>();
 		ArrayList<WordResult> wordsList = new ArrayList<>();
-		String searchTermsList[] = searchTerms.split(" ");
-		if(!searchTerms.isEmpty()) {
-			if (logicalOperator.equals("AND")) {
-							wordsList = findWords(searchTermsList[0], authorConstraint, titleConstraint, skip, limit);
-							//limit is 1000
-							findSentences(wordsList, results, logicalOperator, searchTerms, 1000, 0, excludedTerms);
+		String searchTermsList[] = searchInput.getSearchTerms().split(" ");
+		if(!isNext) {
+			searchInput.setTotalBooksToSearch(getResultsTotal(searchTermsList[0]));
+		}
+		if(searchTermsList.length > 0 && searchTermsList != null) {
+			if (searchInput.getLogicalOperator().equals("AND")) {
+				searchInput.setCurrentResultsFound(0);
+				while (searchInput.getCurrentResultsFound() < searchInput.getMaxResultsPerPage()) {
+					 if(searchInput.getSkip() < searchInput.getTotalBooksToSearch()) {
+							wordsList = findWords(searchTermsList[0]);
+							findSentences(wordsList, results, searchInput);
+					 }
+					 else {
+						 results.add("All books checked.");
+					 }
+				}
 			} else 
-			if (logicalOperator.equals("OR")) {
+			if (searchInput.getLogicalOperator().equals("OR")) {
 				for(String searchTerm : searchTermsList) {
-					wordsList = findWords(searchTerm, authorConstraint, titleConstraint, skip, limit);
-					//limit is 1000
-					findSentences(wordsList, results, logicalOperator, searchTerms, 1000, 0, excludedTerms);
+					wordsList = findWords(searchTerm);
+					findSentences(wordsList, results, searchInput);
 				}
 			} else {
 					results.add("Logical Operator must be AND/OR.");
@@ -44,55 +49,55 @@ public class Retriever {
 		return results;
 	}
 	
-	private ArrayList<WordResult> findWords(String word, String authorConstraint, String titleConstraint, int skip, int limit) {
+	private ArrayList<WordResult> findWords(String word) {
 		ArrayList<WordResult> wordsList = new ArrayList<>();
         Document projectWordFields = new Document("_id", 0);
         projectWordFields.put("bookId", 1);
         projectWordFields.put("totalOccurrences", 1);
         projectWordFields.put("locations", 1);
-        //AggregateIterable<Document> aggregateWords = wordsCollection.aggregate(
         AggregateIterable<Document> aggregateWords = null;
-        if (authorConstraint.isEmpty() && titleConstraint.isEmpty()) {
+
+        if (searchInput.getAuthorConstraint().isEmpty() && searchInput.getTitleConstraint().isEmpty()) {
     		aggregateWords = conn.wordsCollection.aggregate(
     	            Arrays.asList(
     	                    new Document("$match", new Document("word", word)),
     	                    new Document ("$sort", new Document("totalOccurrences", -1)),
-    	                    new Document("$limit", limit),
-    	                    new Document("$skip", skip),
+    	                    new Document("$limit", searchInput.getLimit()),
+    	                    new Document("$skip", searchInput.getSkip()),
     	                    new Document("$project", new Document(projectWordFields)
     	                    )));
         }
-        else if (!authorConstraint.isEmpty() && titleConstraint.isEmpty()) {
+        else if (!searchInput.getAuthorConstraint().isEmpty() && searchInput.getTitleConstraint().isEmpty()) {
     		aggregateWords = conn.wordsCollection.aggregate(
     	            Arrays.asList(
     	                    new Document("$match", new Document("word", word)),
-    	                    new Document("$match", new Document("author", authorConstraint)),
+    	                    new Document("$match", new Document("author", searchInput.getAuthorConstraint())),
     	                    new Document ("$sort", new Document("totalOccurrences", -1)),
-    	                    new Document("$limit", limit),
-    	                    new Document("$skip", skip),
+    	                    new Document("$limit", searchInput.getLimit()),
+    	                    new Document("$skip", searchInput.getSkip()),
     	                    new Document("$project", new Document(projectWordFields)
     	                    )));
         }
-        else if (authorConstraint.isEmpty() && !titleConstraint.isEmpty()) {
+        else if (searchInput.getAuthorConstraint().isEmpty() && !searchInput.getTitleConstraint().isEmpty()) {
     		aggregateWords = conn.wordsCollection.aggregate(
     	            Arrays.asList(
     	                    new Document("$match", new Document("word", word)),
-    	                    new Document("$match", new Document("title", titleConstraint)),
+    	                    new Document("$match", new Document("title", searchInput.getTitleConstraint())),
     	                    new Document ("$sort", new Document("totalOccurrences", -1)),
-    	                    new Document("$limit", limit),
-    	                    new Document("$skip", skip),
+    	                    new Document("$limit", searchInput.getLimit()),
+    	                    new Document("$skip", searchInput.getSkip()),
     	                    new Document("$project", new Document(projectWordFields)
     	                    )));
         }
-        else if (!authorConstraint.isEmpty() && !titleConstraint.isEmpty()) {
+        else if (!searchInput.getAuthorConstraint().isEmpty() && !searchInput.getTitleConstraint().isEmpty()) {
     		aggregateWords = conn.wordsCollection.aggregate(
     	            Arrays.asList(
     	                    new Document("$match", new Document("word", word)),
-    	                    new Document("$match", new Document("author", authorConstraint)),
-    	                    new Document("$match", new Document("title", titleConstraint)),
+    	                    new Document("$match", new Document("author", searchInput.getAuthorConstraint())),
+    	                    new Document("$match", new Document("title", searchInput.getTitleConstraint())),
     	                    new Document ("$sort", new Document("totalOccurrences", -1)),
-    	                    new Document("$limit", limit),
-    	                    new Document("$skip", skip),
+    	                    new Document("$limit", searchInput.getLimit()),
+    	                    new Document("$skip", searchInput.getSkip()),
     	                    new Document("$project", new Document(projectWordFields)
     	                    )));
         }
@@ -101,12 +106,12 @@ public class Retriever {
     	            Arrays.asList(
     	                    new Document("$match", new Document("word", word)),
     	                    new Document ("$sort", new Document("totalOccurrences", -1)),
-    	                    new Document("$limit", limit),
-    	                    new Document("$skip", skip),
+    	                    new Document("$limit", searchInput.getLimit()),
+    	                    new Document("$skip", searchInput.getSkip()),
     	                    new Document("$project", new Document(projectWordFields)
     	                    )));
         }
-
+        
 		for (Document doc : aggregateWords) {
 			WordResult retreivedWord = new WordResult();
 			String[] jsonSplit = doc.toJson().split("[\\s,;\"]+");
@@ -120,11 +125,7 @@ public class Retriever {
 	}
 	private void findSentences(ArrayList<WordResult> wordsList,
 									 ArrayList<String> results, 
-									 String logicalOperator, 
-									 String searchTerms, 
-									 int limit, 
-									 int skip,
-									 String notTerms) {
+									 SearchInput searchInput) {
 		for(WordResult wordResult : wordsList) {
 			 Document projectBookFields = new Document("_id", 0);
 		        projectBookFields.put("title", 1);
@@ -151,13 +152,13 @@ public class Retriever {
 					for (String location : wordResult.getLocations()) {
 						String currentSentence = "sentence-" + location;
 						String sentence = (String) bookResult.get(currentSentence);
-						if(logicalOperator.equals("AND")) {
-							if(checkAndTerms(searchTerms, sentence) && !(containsNotTerms(notTerms, sentence))) {
+						if(searchInput.getLogicalOperator().equals("AND")) {
+							if(checkAndTerms(searchInput.getSearchTerms(), sentence) && !(containsNotTerms(searchInput.getExcludedterms(), sentence))) {
 								results.add(occurrencesCounter + "          " + sentence);
 							}
 						}
 						else {
-							if(!(containsNotTerms(notTerms, sentence))) {
+							if(!(containsNotTerms(searchInput.getExcludedterms(), sentence))) {
 								results.add(occurrencesCounter + "          " + sentence);
 							}
 						}
@@ -167,6 +168,16 @@ public class Retriever {
 					if(indexOfLastAdded == (results.size()-1)) {
 						results.remove(indexOfLastAdded);
 					}
+					else {
+						int currentTotalFound = searchInput.getCurrentResultsFound();
+						searchInput.setCurrentResultsFound(++currentTotalFound);
+					}
+
+					int currentSkip = searchInput.getSkip();
+					int currentLimit = searchInput.getLimit();
+					searchInput.setSkip(++currentSkip);
+					searchInput.setLimit(++currentLimit);
+
 				}
 		}
 	}
@@ -219,6 +230,20 @@ public class Retriever {
 			containsNOtTerms = false;
 		}
 		return containsNOtTerms;
-		
 	}
+	private Integer getResultsTotal(String word) {
+		Integer totalFound = 0;
+        Document projectWordFields = new Document("_id", 0);
+        projectWordFields.put("word", 1);
+        AggregateIterable<Document> aggregateWords = null;
+    		aggregateWords = conn.wordsCollection.aggregate(
+    	            Arrays.asList(
+    	                    new Document("$match", new Document("word", word)),
+    	                    new Document("$project", new Document(projectWordFields)
+    	                    )));
+    		for(Document document : aggregateWords) {
+    			totalFound++;
+    		}
+			return totalFound;
+        }
 }

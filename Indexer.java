@@ -10,7 +10,6 @@ import java.util.UUID;
 import org.bson.Document;
 import com.mongodb.BulkWriteException;
 import com.mongodb.client.model.BulkWriteOptions;
-import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.InsertOneModel;
 import com.mongodb.client.model.WriteModel;
 

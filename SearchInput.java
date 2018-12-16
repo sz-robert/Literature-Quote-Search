@@ -5,17 +5,21 @@ public class SearchInput {
 	private String excludedterms = "";
 	private String titleConstraint = "";
 	private String authorConstraint = "";
-	private int skip = 0;
-	private int limit = 0;
+	private Integer skip;
+	private Integer limit;
+	private int totalBooksToSearch;
+	private Integer currentResultsFound = 0;
+	private Integer maxResultsPerPage = 10;
 	
-	public SearchInput(String searchTerms, String logicalOperator, String excludedTerms, String authorConstraint, String titleConstraint, int skip, int limit) {
+	public SearchInput(String searchTerms, String logicalOperator, String excludedTerms, String authorConstraint, String titleConstraint) {
 		setSearchTerms(searchTerms);
 		setLogicalOperator(logicalOperator);
 		setExcludedterms(excludedTerms);
 		setAuthorConstraint(authorConstraint);
 		setTitleConstraint(titleConstraint);
-		setSkip(skip);
-		setLimit(limit);
+		
+		setSkip(0);
+		setLimit(10);
 	}
 	public String getSearchTerms() {
 		return searchTerms;
@@ -50,13 +54,31 @@ public class SearchInput {
 	public int getSkip() {
 		return skip;
 	}
-	public void setSkip(int skip) {
+	public void setSkip(Integer skip) {
 		this.skip = skip;
 	}
-	public int getLimit() {
+	public Integer getLimit() {
 		return limit;
 	}
-	public void setLimit(int limit) {
+	public void setLimit(Integer limit) {
 		this.limit = limit;
+	}
+	public Integer getMaxResultsPerPage() {
+		return maxResultsPerPage;
+	}
+	public void setmaxResultsPerPage(Integer resultsPerPage) {
+		this.maxResultsPerPage = resultsPerPage;
+	}
+	public Integer getTotalBooksToSearch() {
+		return totalBooksToSearch;
+	}
+	public void setTotalBooksToSearch(int totalBooksToSearch) {
+		this.totalBooksToSearch = totalBooksToSearch;
+	}
+	public Integer getCurrentResultsFound() {
+		return currentResultsFound;
+	}
+	public void setCurrentResultsFound(Integer currentResultsFound) {
+		this.currentResultsFound = currentResultsFound;
 	}
 }
