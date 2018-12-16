@@ -9,8 +9,7 @@ import { /*Person*/ Quotes, SearchService } from '../shared';
 
 
 export class SearchComponent implements OnInit {
-  //searchResults: Array< Person >;
-  searchResults: Array< Quotes >;
+   searchResults: Array< Quotes >;
   @Input() query: string;
 
   constructor(private searchService: SearchService) { }
@@ -20,8 +19,8 @@ export class SearchComponent implements OnInit {
 
   search(): void {
     this.searchService.search(this.query).subscribe(
-      (data: any) => { this.searchResults = data; },
-      //(retrieverCont: any) => { this.searchResults = retrieverCont; },
+      //(data: any) => { this.searchResults = data; },
+      (retriever: any) => { this.searchResults = retriever; },
       error => console.log(error)
     );
   }
