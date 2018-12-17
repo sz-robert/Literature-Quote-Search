@@ -1,0 +1,38 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<div style="text-align:center">
+  <h1>
+    Welcome to {{ title }}
+  </h1>
+  <h3><a href="https://searchengineapp.github.io/">Home</a></h3>
+  <h3><a href="http://www.gutenberg.org/">Project Gutenberg</a></h3>
+  <br/>
+  <p>Moogle is a search engine application that searches a collection of online books</p> 
+  <p>from the Gutenberg ebook collection and returns a list of sentences containing</p> 
+  <p>the specified search term. It also return a citation for each sentence including</p> 
+  <p>the name of book and the author of the book which the sentence is taken from</p>
+  <p>Lets consider one book as an example and perform a search in one page of it.</p> 
+  <p> </p>
+  <p>For example we consider the book "A Christmas Carol" by "Charles Dickens: "</p>
+
+  <img src="http://www.picturebritain.com/wp-content/uploads/2012/12/A_Christmas_Carol_frontpiece.jpg"
+  width="220" height="140" />
+  <p>Lets consider the first page of the chapter one and perform a search in that page: </p>
+  <img src="http://i.huffpost.com/gen/1517083/images/o-GEORGE-OBSORNE-CHRISTMAS-CAROL-facebook.jpg"
+  width="220" height="140" />
+  <p>Searching for the word "Scrooge" in the text field:</p>
+
+  <form>
+    <input type="search" name="query" [(ngModel)]="query" (keyup.enter)="search()">
+    <button type="button" (click)="search()">Search</button>
+  </form>
+</div>
+  <p>Result</p>
+  <p>----------------------------------------------------------------------------------------------------------------------------------------
+  -----------------------------------------------------------------------------------------------------------------------------------------------</p>
+  <p>And now the counting-house belonged only to Scrooge. (A Christmas Carol by Charles Dickens)</p>
+  <p>----------------------------------------------------------------------------------------------------------------------------------------
+  -----------------------------------------------------------------------------------------------------------------------------------------------</p>
+  <p>George Gideon Osborne Scrooge. (A Christmas Carol by Charles Dickens)</p>
+  <p>----------------------------------------------------------------------------------------------------------------------------------------
+  -----------------------------------------------------------------------------------------------------------------------------------------------</p>
+  <p>“Merry Christmas, Mr Scrooge!” said Bob Cratchit as he entered the counting-house: “Merry?” Scrooge snapped, like a reptile that only looked after his rich banker friend. (A Christmas Carol by Charles Dickens)</p>
