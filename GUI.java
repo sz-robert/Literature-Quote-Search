@@ -97,6 +97,7 @@ public class GUI extends JFrame
 	static MongoConnection localDatabase;
 	static MongoConnection remoteDatabase;
 	static MongoConnection remoteBooksList;
+	
 	//constructor to build the main GUI 
 	public GUI () 
 	{	
@@ -491,8 +492,8 @@ public class GUI extends JFrame
 		SearchInput searchInput = new SearchInput(searchField.getText(),
 												 (String) searchOptions.getSelectedItem(), 
 												 excludeField.getText(), 
-												 selectField.getText(), 
-												 authorField.getText()
+												 authorField.getText(),
+												 selectField.getText()
 												 );
 		ArrayList<String> resultsList = retriever.findQuotes(searchInput, false);
 		JFrame nframe = new JFrame("Search ");		
@@ -650,7 +651,6 @@ public class GUI extends JFrame
 		} catch (Exception e)  {
 			System.out.println("Local Connection could not be established.");
 		}
-		
 		try {
 			remoteDatabase = new MongoConnection(false);
 		} catch (Exception e) {

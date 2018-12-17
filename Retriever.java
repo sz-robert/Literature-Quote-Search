@@ -9,29 +9,32 @@ public class Retriever {
 	
 	MongoConnection conn; 
 	SearchInput searchInput = null;
+	boolean allChecked = false;
 	public Retriever (MongoConnection conn) {
 		this.conn = conn;
 	}
 	
 	public ArrayList<String> findQuotes(SearchInput searchInput, boolean isNext) {
+		allChecked = false;
 		this.searchInput = searchInput;
 		ArrayList<String> results = new ArrayList<>();
 		ArrayList<WordResult> wordsList = new ArrayList<>();
 		String searchTermsList[] = searchInput.getSearchTerms().split(" ");
-		if(!isNext) {
-			searchInput.setTotalBooksToSearch(getResultsTotal(searchTermsList[0]));
+		
+		int booksCount = (int) conn.booksCollection.count();
+		if (booksCount < 10) {
+			searchInput.setmaxResultsPerPage(booksCount);
 		}
+		
 		if(searchTermsList.length > 0 && searchTermsList != null) {
 			if (searchInput.getLogicalOperator().equals("AND")) {
 				searchInput.setCurrentResultsFound(0);
 				while (searchInput.getCurrentResultsFound() < searchInput.getMaxResultsPerPage()) {
-					 if(searchInput.getSkip() < searchInput.getTotalBooksToSearch()) {
 							wordsList = findWords(searchTermsList[0]);
+							if(wordsList.isEmpty()) {
+								break;
+							}
 							findSentences(wordsList, results, searchInput);
-					 }
-					 else {
-						 results.add("All books checked.");
-					 }
 				}
 			} else 
 			if (searchInput.getLogicalOperator().equals("OR")) {
@@ -111,8 +114,9 @@ public class Retriever {
     	                    new Document("$project", new Document(projectWordFields)
     	                    )));
         }
-        
+        int counter = 0;
 		for (Document doc : aggregateWords) {
+			counter++;
 			WordResult retreivedWord = new WordResult();
 			String[] jsonSplit = doc.toJson().split("[\\s,;\"]+");
 			retreivedWord.setBookId(jsonSplit[3]);
@@ -120,6 +124,9 @@ public class Retriever {
 			String locations = jsonSplit[9];
 			retreivedWord.setLocations(locations.split("-"));
 			wordsList.add(retreivedWord);
+		}
+		if(counter == 0) {
+			allChecked = true;
 		}
 		return wordsList;
 	}
@@ -231,19 +238,4 @@ public class Retriever {
 		}
 		return containsNOtTerms;
 	}
-	private Integer getResultsTotal(String word) {
-		Integer totalFound = 0;
-        Document projectWordFields = new Document("_id", 0);
-        projectWordFields.put("word", 1);
-        AggregateIterable<Document> aggregateWords = null;
-    		aggregateWords = conn.wordsCollection.aggregate(
-    	            Arrays.asList(
-    	                    new Document("$match", new Document("word", word)),
-    	                    new Document("$project", new Document(projectWordFields)
-    	                    )));
-    		for(Document document : aggregateWords) {
-    			totalFound++;
-    		}
-			return totalFound;
-        }
 }
