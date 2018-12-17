@@ -20,6 +20,10 @@ The direct link to the user guide for Moogle is:
 
 https://searchengineguide.github.io/
 
+The display of the user guide is at:
+
+https://github.com/sz-robert/Literature-Quote-Search/blob/frontend_versions_ps/Example_WebApp_User_Guide.png
+
 
 
 Enjoy Moogle!
