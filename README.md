@@ -18,7 +18,7 @@ https://github.com/sz-robert/Literature-Quote-Search/tree/frontend_versions_ps/M
 
 The direct link to the user guide for Moogle is:
 
-https://searchengineguide.github.io/search
+https://searchengineguide.github.io/
 
 
 
