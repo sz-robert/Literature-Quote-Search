@@ -8,13 +8,18 @@ Note: In case that clicking on the link does not work, copy and paste it in your
 
 The display of the web site is located at:
 
-https://github.com/sz-robert/Literature-Quote-Search/blob/frontend_versions_ps/Example_WebApp_Input.PNG
-https://github.com/sz-robert/Literature-Quote-Search/blob/frontend_versions_ps/Example_WebApp_Output.PNG
+https://github.com/sz-robert/Literature-Quote-Search/blob/frontend_versions_ps/Example_WebApp_Input.png
+https://github.com/sz-robert/Literature-Quote-Search/blob/frontend_versions_ps/Example_WebApp_Output.png
 
 
 Source: The sourse code for this web page is located at: 
 
 https://github.com/sz-robert/Literature-Quote-Search/tree/frontend_versions_ps/Moogle/src
+
+The direct link to the user guide for Moogle is:
+
+https://searchengineguide.github.io/search
+
 
 
 Enjoy Moogle!
